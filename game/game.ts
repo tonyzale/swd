@@ -1,7 +1,14 @@
+/// <reference path="../typings/globals/node/index.d.ts" />
+
 namespace destiny {
-    class GameState {
+    export class GameState {
+        constructor() {
+            let fs = require('fs');
+            this.all_cards = JSON.parse(fs.readFileSync('game/cards.json').toString());
+        }
         player: Player[] = [new Player('P1'), new Player('P2')];
         active_player: number;
+        public readonly all_cards: any;
     }
     
     class Player {
@@ -29,7 +36,7 @@ namespace destiny {
     }
     
     class Card {
-        name: string;
+        constructor(public readonly name: string, public readonly id: string){}
     }
     
     class EventCard extends Card {
@@ -102,4 +109,10 @@ namespace destiny {
     class Pass implements TurnAction {
         
     }
+    
+    class RoundReset implements TurnAction {
+
+    }
 }
+
+export = destiny;

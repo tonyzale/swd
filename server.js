@@ -10,6 +10,11 @@ var async = require('async');
 var socketio = require('socket.io');
 var express = require('express');
 
+var destiny = require('./game/game');
+// console.log(destiny);
+var game = new destiny.GameState();
+console.log(game.all_cards);
+
 //
 // ## SimpleServer `SimpleServer(obj)`
 //
