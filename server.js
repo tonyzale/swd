@@ -11,8 +11,10 @@ var socketio = require('socket.io');
 var express = require('express');
 
 var destiny = require('./game/game');
-console.log(destiny);
 var card_db = new destiny.CardDB();
+for (var card of card_db.cards) {
+  console.log(card.DebugString());
+}
 
 //
 // ## SimpleServer `SimpleServer(obj)`

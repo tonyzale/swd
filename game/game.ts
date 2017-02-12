@@ -23,13 +23,15 @@ export class GameState {
 }
 
 class Player {
-    constructor(public readonly name: string){}
+    constructor(public readonly name: string) {
+    }
     hand: cards.Card[];
     draw_deck: cards.Card[];
     discard_pile: cards.Card[];
     characters: Character[];
     supports: Support[];
     resources: number;
+    battlefield: cards.Card;
 }
 
 class InPlay {

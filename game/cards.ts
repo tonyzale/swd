@@ -106,6 +106,12 @@ export class Card {
         this.cost = ((typeof json['cost'] === 'number') ? json['cost'] : undefined);
         this.is_unique = json['is_unique'];
     }
+    DebugString(): string {
+        return `${this.name} - ${CardType[this.type]} - ${this.code} ${(this.die ? ('- ' + this.die.DebugString()) : '')}`;
+    }
+    MakeCopy(): Card {
+        return new Card(this.json);
+    }
     public readonly name: string;
     public readonly code: string;
     public readonly faction: Faction;
@@ -118,7 +124,50 @@ export class Card {
 }
 
 export class Die {
-    constructor(public readonly die_json: any){}
+    constructor(public readonly json: any) {
+        this.sides = [];
+        for (let side of json) {
+            if (this.SideHelper(side, 'MD', SideType.Melee)) continue;
+            if (this.SideHelper(side, 'RD', SideType.Ranged)) continue;
+            if (this.SideHelper(side, 'Sh', SideType.Shield)) continue;
+            if (this.SideHelper(side, 'Dr', SideType.Disrupt)) continue;
+            if (this.SideHelper(side, 'Dc', SideType.Discard)) continue;
+            if (this.SideHelper(side, 'Sp', SideType.Special)) continue;
+            if (this.SideHelper(side, 'R', SideType.Resource)) continue;
+            if (this.SideHelper(side, 'F', SideType.Focus)) continue;
+            if (side == '-') {
+                this.sides.push(new DieSide(SideType.Blank, 0, false, 0));
+                continue;
+            }
+            throw new RangeError('Unknown Die Side');
+        }
+    }
+    DebugString(): string {
+        let out = '';
+        for (let side of this.sides) {
+            out += side.DebugString() + ' ';
+        }
+        return out;
+    }
+    private SideHelper(side: string, code: string, enum_val: SideType): boolean {
+        let split = side.split(code);
+        if (split.length == 1) return false;
+        let val_str = split[0];
+        let mod = false;
+        let val = Number(val_str);
+        if (val_str[0] == '+') {
+            mod = true;
+            val = Number(val_str.substr(1));
+        }
+        let cost = 0;
+        if (split.length == 2) {
+            cost = Number(split[1]);
+        }
+        
+        this.sides.push(new DieSide(enum_val, val, mod, cost));
+        return true;
+    }
+    public readonly sides: DieSide[];
 }
 
 enum SideType {
@@ -134,5 +183,8 @@ enum SideType {
 }
     
 class DieSide {
-    constructor(public readonly type: SideType, public readonly is_modifier: boolean, public readonly resource_cost: number){}
+    constructor(public readonly type: SideType, public readonly val: number, public readonly is_modifier: boolean, public readonly resource_cost: number){}
+    DebugString(): string {
+        return `[${(this.is_modifier ? '+':'')}${SideType[this.type]}${(this.val > 0) ? this.val : '' }${((this.resource_cost > 0) ? (' cost:' + this.resource_cost) : '')}]`;
+    }
 }
