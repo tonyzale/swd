@@ -11,6 +11,7 @@ var socketio = require('socket.io');
 var express = require('express');
 
 var destiny = require('./game/game');
+console.log(destiny);
 var card_db = new destiny.CardDB();
 
 //
