@@ -142,6 +142,9 @@ export class Die {
             throw new RangeError('Unknown Die Side');
         }
     }
+    MakeCopy(): Die { 
+        return new Die(this.json);
+    }
     DebugString(): string {
         let out = '';
         for (let side of this.sides) {
@@ -153,12 +156,8 @@ export class Die {
         let split = side.split(code);
         if (split.length == 1) return false;
         let val_str = split[0];
-        let mod = false;
+        let mod = (val_str[0] == '+');
         let val = Number(val_str);
-        if (val_str[0] == '+') {
-            mod = true;
-            val = Number(val_str.substr(1));
-        }
         let cost = 0;
         if (split.length == 2) {
             cost = Number(split[1]);

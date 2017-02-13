@@ -18,17 +18,39 @@ export class CardDB {
     public readonly cards_by_code: {[id: string]: cards.Card};
 }
 export class GameState {
-    player: Player[] = [new Player('P1'), new Player('P2')];
-    active_player: number;
+    constructor(public p1: Player, public p2: Player) {
+        this.player.push(p1);
+        this.player.push(p2);
+    }
+    
+    DebugString(): string {
+        return `round ${this.round} [${this.player[0].DebugString()}] [${this.player[1].DebugString()}]`;
+    }
+    player: Player[] = [];
+    round: number = 0;
+    active_player: number = 0;
 }
 
-class Player {
-    constructor(public readonly name: string) {
+export class Player {
+    constructor(public readonly name: string, card_db: CardDB) {
+        let trooper = card_db.cards_by_code['01002'].MakeCopy();
+        this.characters.push(new Character(trooper));
+        this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
     }
-    hand: cards.Card[];
+    
+    DebugString(): string {
+        let out = `${this.name}: `;
+        for (let c of this.characters) {
+            out += `${c.card.name} damage: ${c.damage} + `;
+        }
+        out = out.slice(0, out.length - 3);
+        return out;
+    }
+    
+    hand: cards.Card[] = [];
     draw_deck: cards.Card[];
     discard_pile: cards.Card[];
-    characters: Character[];
+    characters: Character[] = [];
     supports: Support[];
     resources: number;
     battlefield: cards.Card;
@@ -38,9 +60,17 @@ class InPlay {
     exhausted: boolean;
 }
 
-class Character extends InPlay {
+class Upgrade {
     card: cards.Card;
-    damage: number;
+    exhausted: boolean;
+    dice: cards.Die[];
+}
+
+class Character extends InPlay {
+    constructor(public readonly card: cards.Card) {
+        super();
+    }
+    damage = 0;
     upgrades: cards.Card[];
 }
 

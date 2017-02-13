@@ -12,9 +12,10 @@ var express = require('express');
 
 var destiny = require('./game/game');
 var card_db = new destiny.CardDB();
-for (var card of card_db.cards) {
-  console.log(card.DebugString());
-}
+var p1 = new destiny.Player('p1', card_db);
+var p2 = new destiny.Player('p2', card_db);
+var game = new destiny.GameState(p1, p2);
+console.log(game.DebugString());
 
 //
 // ## SimpleServer `SimpleServer(obj)`
