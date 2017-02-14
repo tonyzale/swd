@@ -34,16 +34,22 @@ export class GameState {
 export class Player {
     constructor(public readonly name: string, card_db: CardDB) {
         let trooper = card_db.cards_by_code['01002'].MakeCopy();
-        this.characters.push(new Character(trooper));
+        this.characters.push(new Character(trooper, false));
         this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
+        this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));
     }
     
     DebugString(): string {
         let out = `${this.name}: `;
         for (let c of this.characters) {
-            out += `${c.card.name} damage: ${c.damage} + `;
+            out += `${c.DebugString()} + `;
+        }
+        
+        for (let s of this.supports) {
+            out += `${s.DebugString()} + `;
         }
         out = out.slice(0, out.length - 3);
+        
         return out;
     }
     
@@ -51,31 +57,104 @@ export class Player {
     draw_deck: cards.Card[];
     discard_pile: cards.Card[];
     characters: Character[] = [];
-    supports: Support[];
+    supports: Support[] = [];
     resources: number;
     battlefield: cards.Card;
 }
 
-class InPlay {
-    exhausted: boolean;
+enum DieState {
+    Ready,
+    InPlay,
+    Resolved,
+    Unavailable
+}
+
+enum CardState {
+    Ready,
+    Exhausted
+}
+
+class PlayDie {
+    constructor(public die: cards.Die) {
+        
+    }
+    DebugString(): string {
+        if (this.state == DieState.InPlay) {
+            return `die showing ${this.die.sides[this.active_face].DebugString()}`;
+        } else {
+            return `die ${DieState[this.state]}`;
+        }
+    }
+    public state = DieState.Ready;
+    public active_face: number = 1;
 }
 
 class Upgrade {
-    card: cards.Card;
-    exhausted: boolean;
-    dice: cards.Die[];
-}
-
-class Character extends InPlay {
     constructor(public readonly card: cards.Card) {
-        super();
+        if (card.type != cards.CardType.Upgrade) {
+            throw new RangeError('Card Not Upgrade');
+        }
+        if (card.die) {
+            this.dice.push(new PlayDie(card.die));
+        }
     }
-    damage = 0;
-    upgrades: cards.Card[];
+    DebugString(): string {
+        let out = `${this.card.DebugString()} ${CardState[this.state]} `;
+        for (let d of this.dice) {
+            out += `${d.DebugString()} `;
+        }
+        return out;
+    }
+    public dice: PlayDie[] = [];
+    public state = CardState.Ready;
 }
 
-class Support extends InPlay {
-    card: cards.Card;
+class Character {
+    constructor(public readonly card: cards.Card, public readonly elite: boolean) {
+        if (card.type != cards.CardType.Character) {
+            throw new RangeError('Not Character Card');
+        }
+        this.dice.push(new PlayDie(card.die));
+        if (elite) {
+            this.dice.push(new PlayDie(card.die));
+        }
+    }
+    DebugString(): string {
+        let out = `${this.card.name} damage: ${this.damage} `;
+        for (let d of this.dice) {
+            out += `${d.DebugString()} `;
+        }
+        for (let u of this.upgrades) {
+            out += `${u.DebugString()} `;
+        }
+        return out;
+    }
+    public damage = 0;
+    public state = CardState.Ready;
+    public upgrades: Upgrade[] = [];
+    public dice: PlayDie[] = [];
+}
+
+class Support {
+    constructor(public readonly card: cards.Card) {
+        if (this.card.type != cards.CardType.Support) {
+            throw new RangeError('Not Support Card');
+        }
+        if (this.card.die) {
+            this.dice.push(new PlayDie(card.die));
+        }
+    }
+    
+    DebugString(): string {
+        let out = `${this.card.name} ${CardState[this.state]} `;
+        for (let d of this.dice) {
+            out += `${d.DebugString()} `;
+        }
+        return out;
+    }
+    
+    public dice: PlayDie[] = [];
+    public state = CardState.Ready;
 }
 
 class TurnRecord {

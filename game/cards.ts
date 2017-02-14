@@ -1,17 +1,17 @@
-enum Faction {
+export enum Faction {
     red,
     blue,
     yellow,
     gray
 };
 
-enum Affiliation {
+export enum Affiliation {
     hero,
     villain,
     neutral
 };
 
-enum CardType {
+export enum CardType {
     Character,
     Upgrade,
     Support,
@@ -19,7 +19,7 @@ enum CardType {
     Battlefield
 }
 
-enum CardSubType {
+export enum CardSubType {
     None,
     Weapon,
     Equipment,
