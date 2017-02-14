@@ -35,6 +35,7 @@ export class Player {
     constructor(public readonly name: string, card_db: CardDB) {
         let trooper = card_db.cards_by_code['01002'].MakeCopy();
         this.characters.push(new Character(trooper, false));
+        this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
         this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
         this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));
     }
@@ -99,7 +100,7 @@ class Upgrade {
         }
     }
     DebugString(): string {
-        let out = `${this.card.DebugString()} ${CardState[this.state]} `;
+        let out = `${this.card.name} ${CardState[this.state]} `;
         for (let d of this.dice) {
             out += `${d.DebugString()} `;
         }
