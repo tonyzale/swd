@@ -9,9 +9,27 @@
       body {
         padding-top: 60px;
       }
+      .card {
+        position: relative;
+        width: 150px;
+        height: 210px;
+        -webkit-transition: width 1s, height 1s, transform 2s;
+        transition: width 1s, height 1s;
+        z-index: 1;
+      }
+      .card:hover {
+        height: 419px;
+        width: 300px;
+        z-index: 2;
+      }
+      .card.exhausted {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+      }
     </style>
     <script>
       function ChatController($scope) {
+        /*global io*/
         var socket = io.connect();
 
         $scope.messages = [];
@@ -30,6 +48,11 @@
 
         socket.on('roster', function (names) {
           $scope.roster = names;
+          $scope.$apply();
+        });
+        
+        socket.on('state', function(state) {
+          $scope.game_state = JSON.parse(state);
           $scope.$apply();
         });
 
@@ -53,6 +76,23 @@
             <a href="https://c9.io" class="brand">Cloud9 IDE</a>
           </div>
         </div>
+      </div>
+      <div class="page-header">
+        <h1>Game State</h1>
+        <div ng-repeat="player in game_state.player">
+          <h2>{{player.name}}</h2>
+          <h3>Hand</h3>
+          <span ng-repeat="card in player.hand">
+            <img class="card" ng-class="{exhausted: card.code=='01159'}" ng-src="{{card.json.imagesrc}}"/>
+          </span>
+          <h3>Characters</h3>
+          <span ng-repeat="char in player.characters">
+            <img class="card" ng-src="{{char.card.json.imagesrc}}" />
+          </span>
+          <h3>Supports</h3>
+          <span ng-repeat="support in player.supports">
+            <img class="card" ng-src="{{support.card.json.imagesrc}}" />
+          </span>
       </div>
       <div class="page-header">
         <h1>Chat Example</h1>

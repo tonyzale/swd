@@ -15,7 +15,6 @@ var card_db = new destiny.CardDB();
 var p1 = new destiny.Player('p1', card_db);
 var p2 = new destiny.Player('p2', card_db);
 var game = new destiny.GameState(p1, p2);
-console.log(game.p1.GetAvailableActions());
 
 //
 // ## SimpleServer `SimpleServer(obj)`
@@ -35,6 +34,8 @@ io.on('connection', function (socket) {
     messages.forEach(function (data) {
       socket.emit('message', data);
     });
+    
+    socket.emit('state', JSON.stringify(game));
 
     sockets.push(socket);
 
