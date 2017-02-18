@@ -54,6 +54,52 @@ export class Player {
         return out;
     }
     
+    GetAvailableActions(): TurnAction[] {
+        let out: TurnAction[] = [];
+        for (let c of this.hand) {
+            if (c.type == cards.CardType.Event) {
+                out.push(new PlayEvent(c));
+            } else if (c.type == cards.CardType.Upgrade) {
+                for (let char of this.characters) {
+                    out.push(new InstallUpgrade(c, char));
+                }
+            } else if (c.type == cards.CardType.Support) {
+                out.push(new InstallSupport(c));
+            }
+        }
+        let dice_pool: PlayDie[] = [];
+        for (let c of this.characters) {
+            if (c.state == CardState.Ready) {
+                out.push(new Activate(c));
+            }
+            for (let die of c.dice) {
+                if (die.state == DieState.InPlay) {
+                    dice_pool.push(die);
+                }
+            }
+            for (let upgrade of c.upgrades) {
+                for (let die of upgrade.dice) {
+                    if (die.state == DieState.InPlay) {
+                        dice_pool.push(die);
+                    }
+                }
+            }
+        }
+        for (let s of this.supports) {
+            if (s.state == CardState.Ready) {
+                out.push(new Activate(s));
+            }
+            for (let die of s.dice) {
+                if (die.state == DieState.InPlay) {
+                    dice_pool.push(die);
+                }
+            }
+        }
+        out.push(new Pass());
+        out.push(new ClaimBattlefield());
+        return out;
+    }
+    
     hand: cards.Card[] = [];
     draw_deck: cards.Card[];
     discard_pile: cards.Card[];
@@ -167,32 +213,38 @@ interface TurnAction {
     
 }
 
-class PlayCard implements TurnAction {
-    
+class PlayEvent implements TurnAction {
+    constructor(public card: cards.Card){}
+}
+
+class InstallUpgrade implements TurnAction {
+    constructor(public card: cards.Card, public target: Character){}
+}
+
+class InstallSupport implements TurnAction {
+    constructor(public card: cards.Card){}
 }
 
 class Activate implements TurnAction {
-    
+    constructor(public target: Character | Upgrade | Support){}
 }
 
 class Resolve implements TurnAction {
-    
+    constructor(public side_type: cards.SideType){}
 }
 
 class Discard implements TurnAction {
-    
+    constructor(public card: cards.Card){}
 }
 
 class UseCardAction implements TurnAction {
-    
+    constructor(public card: cards.Card){}
 }
 
 class ClaimBattlefield implements TurnAction {
-    
 }
 
 class Pass implements TurnAction {
-    
 }
 
 class RoundReset implements TurnAction {

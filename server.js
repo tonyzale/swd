@@ -15,7 +15,7 @@ var card_db = new destiny.CardDB();
 var p1 = new destiny.Player('p1', card_db);
 var p2 = new destiny.Player('p2', card_db);
 var game = new destiny.GameState(p1, p2);
-console.log(game.DebugString());
+console.log(game.p1.GetAvailableActions());
 
 //
 // ## SimpleServer `SimpleServer(obj)`

@@ -169,7 +169,7 @@ export class Die {
     public readonly sides: DieSide[];
 }
 
-enum SideType {
+export enum SideType {
     Melee,
     Ranged,
     Shield,
