@@ -10,21 +10,27 @@
         padding-top: 60px;
       }
       .card {
+        display: inline-block;
         position: relative;
         width: 150px;
         height: 210px;
-        -webkit-transition: width 1s, height 1s, transform 2s;
-        transition: width 1s, height 1s;
+        -webkit-transition: transform 0.5s;
+        transition: transform 0.5s;
         z-index: 1;
+        transform: scale(1);
       }
       .card:hover {
-        height: 419px;
-        width: 300px;
+        transform: scale(1.5);
         z-index: 2;
       }
       .card.exhausted {
         -webkit-transform: rotate(90deg);
-        transform: rotate(90deg);
+        transform: rotate(90deg) scale(1);
+      }
+      .card.exhausted:hover {
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg) scale(1.5);
+        z-index: 2;
       }
     </style>
     <script>
@@ -83,7 +89,7 @@
           <h2>{{player.name}}</h2>
           <h3>Hand</h3>
           <span ng-repeat="card in player.hand">
-            <img class="card" ng-class="{exhausted: card.code=='01159'}" ng-src="{{card.json.imagesrc}}"/>
+            <img class="card" ng-click="card.exhausted = !card.exhausted" ng-class="{exhausted: card.exhausted}" ng-src="{{card.json.imagesrc}}"/>
           </span>
           <h3>Characters</h3>
           <span ng-repeat="char in player.characters">
