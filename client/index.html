@@ -9,9 +9,18 @@
       body {
         padding-top: 60px;
       }
+      .card_wrap {
+        width: 150px;
+        display:inline-block;
+        padding: 0 3px 3px 0;
+      }
+      .card_wrap.exhausted {
+        width: 210px;
+      }
       .card {
-        display: inline-block;
-        position: relative;
+        display: block;
+        margin: auto;
+        /*position: relative;*/
         width: 150px;
         height: 210px;
         -webkit-transition: transform 0.5s;
@@ -88,9 +97,9 @@
         <div ng-repeat="player in game_state.player">
           <h2>{{player.name}}</h2>
           <h3>Hand</h3>
-          <span ng-repeat="card in player.hand">
-            <img class="card" ng-click="card.exhausted = !card.exhausted" ng-class="{exhausted: card.exhausted}" ng-src="{{card.json.imagesrc}}"/>
-          </span>
+          <div class="card_wrap" ng-repeat="card in player.hand" ng-class="{exhausted: (card.state==1)}">
+            <img class="card" ng-click="card.state = !card.state" ng-class="{exhausted: (card.state==1)}" ng-src="{{card.json.imagesrc}}"/>
+          </div>
           <h3>Characters</h3>
           <span ng-repeat="char in player.characters">
             <img class="card" ng-src="{{char.card.json.imagesrc}}" />
