@@ -36,6 +36,11 @@ export class Player {
         let trooper = card_db.cards_by_code['01002'].MakeCopy();
         this.characters.push(new Character(trooper, false));
         this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
+        this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
+        this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
+                this.characters.push(new Character(trooper, false));
+        this.characters[1].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
+        this.characters[1].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
         this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
         this.hand.push(card_db.cards_by_code['01159'].MakeCopy());
         this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));

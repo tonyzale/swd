@@ -9,7 +9,15 @@
       body {
         padding-top: 60px;
       }
+      .all_character_wrap {
+        height: 550px;
+      }
+      .character_wrap {
+        display: inline-block;
+        position: relative;
+      }
       .card_wrap {
+        position: relative;
         width: 150px;
         display:inline-block;
         padding: 0 3px 3px 0;
@@ -17,6 +25,9 @@
       }
       .card_wrap.exhausted {
         width: 210px;
+      }
+      .card_wrap.compact {
+        left: -75px;
       }
       .card {
         position: relative;
@@ -97,9 +108,18 @@
           <div class="card_wrap" ng-repeat="card in player.hand" ng-class="{exhausted: (card.state==1)}">
             <img class="card" ng-click="card.state = !card.state" ng-class="{exhausted: (card.state==1)}" ng-src="{{card.json.imagesrc}}"/>
           </div>
-          <h3>Characters</h3>
-          <div class="card_wrap" ng-repeat="char in player.characters" ng-class="{exhausted: (card.state==1)}">
-            <img class="card" ng-class="{exhausted: (card.state==1)}" ng-src="{{char.card.json.imagesrc}}" />
+          <div class="all_character_wrap">
+            <h3>Characters</h3>
+            <div class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*-200 + 'px'}"}>
+              <div>
+                <div class="card_wrap" ng-class="{exhausted: (card.state==1)}">
+                  <img class="card" ng-class="{exhausted: (card.state==1)}" ng-src="{{char.card.json.imagesrc}}" />
+                </div>
+              </div>
+              <div class="card_wrap" ng-repeat="upgrade in char.upgrades" ng-style="{'left': $index*-120 + 'px', 'top': $index*30 + 'px'}" ng-class="{compact: ($index!=0), exhausted: (upgrade.state==1)}">
+                 <img class="card" ng-class="{exhausted: (upgrade.card.state==1)}" ng-src="{{upgrade.card.json.imagesrc}}" />
+              </div>
+            </div>
           </div>
           <h3>Supports</h3>
           <div ng-repeat="support in player.supports" class="card_wrap" ng-class="{exhausted: (card.state==1)}">
