@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app>
+<html lang="en" ng-app="GameApp">
   <head>
     <title>Chat Example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,6 +50,10 @@
         transform: rotate(90deg) scale(1.5);
       }
     </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/angular.min.js"></script>
     <script src="/js/client_game.js"></script>
   </head>
   <body>
@@ -62,6 +66,8 @@
         </div>
       </div>
       <div class="page-header">
+        directive card
+        <card info="game_state.player[0].hand[0]"></card>
         <h1>Game State</h1>
         <div><span ng-repeat="move in moves">{{move.name}}</span></div>
         <div ng-repeat="player in game_state.player">
@@ -126,9 +132,5 @@
         </div>
       </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/angular.min.js"></script>
   </body>
 </html>
