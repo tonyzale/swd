@@ -66,32 +66,30 @@
         </div>
       </div>
       <div class="page-header">
-        directive card
-        <card info="game_state.player[0].hand[0]"></card>
         <h1>Game State</h1>
         <div><span ng-repeat="move in moves">{{move.name}}</span></div>
         <div ng-repeat="player in game_state.player">
           <h2>{{player.name}}</h2>
           <h3>Hand</h3>
           <div class="card_wrap" ng-repeat="card in player.hand" ng-class="{exhausted: (card.state==1)}">
-            <img class="card" ng-click="card.state = !card.state" ng-class="{exhausted: (card.state==1)}" ng-src="{{card.json.imagesrc}}"/>
+            <card info="card"></card>
           </div>
           <div class="all_character_wrap">
             <h3>Characters</h3>
             <div class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*-200 + 'px'}"}>
               <div>
                 <div class="card_wrap" ng-class="{exhausted: (card.state==1)}">
-                  <img class="card" ng-class="{exhausted: (card.state==1)}" ng-src="{{char.card.json.imagesrc}}" />
+                  <card info="char.card"></card>
                 </div>
               </div>
               <div class="card_wrap" ng-repeat="upgrade in char.upgrades" ng-style="{'left': $index*-120 + 'px', 'top': $index*30 + 'px'}" ng-class="{compact: ($index!=0), exhausted: (upgrade.state==1)}">
-                 <img class="card" ng-class="{exhausted: (upgrade.card.state==1)}" ng-src="{{upgrade.card.json.imagesrc}}" />
+                <card info="upgrade.card"></card>
               </div>
             </div>
           </div>
           <h3>Supports</h3>
           <div ng-repeat="support in player.supports" class="card_wrap" ng-class="{exhausted: (card.state==1)}">
-            <img class="card" ng-class="{exhausted: (card.state==1)}" ng-src="{{support.card.json.imagesrc}}" />
+            <card info="support.card"></card>
           </div>
       </div>
       <div class="page-header">
