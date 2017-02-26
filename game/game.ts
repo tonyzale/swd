@@ -215,44 +215,46 @@ class TurnRecord {
     turn_action: TurnAction;
 }
 
-interface TurnAction {
-    
+class TurnAction {
+    constructor(public name: string){}
 }
 
-class PlayEvent implements TurnAction {
-    constructor(public card: cards.Card){}
+class PlayEvent extends TurnAction {
+    constructor(public card: cards.Card){super('PlayEvent');}
 }
 
-class InstallUpgrade implements TurnAction {
-    constructor(public card: cards.Card, public target: Character){}
+class InstallUpgrade extends TurnAction {
+    constructor(public card: cards.Card, public target: Character){super('InstallUpgrade');}
 }
 
-class InstallSupport implements TurnAction {
-    constructor(public card: cards.Card){}
+class InstallSupport extends TurnAction {
+    constructor(public card: cards.Card){super('InstallSupport');}
 }
 
-class Activate implements TurnAction {
-    constructor(public target: Character | Upgrade | Support){}
+class Activate extends TurnAction {
+    constructor(public target: Character | Upgrade | Support){super('Activate');}
 }
 
-class Resolve implements TurnAction {
-    constructor(public side_type: cards.SideType){}
+class Resolve extends TurnAction {
+    constructor(public side_type: cards.SideType){super('Resolve')}
 }
 
-class Discard implements TurnAction {
-    constructor(public card: cards.Card){}
+class Discard extends TurnAction {
+    constructor(public card: cards.Card){super('Discard');}
 }
 
-class UseCardAction implements TurnAction {
-    constructor(public card: cards.Card){}
+class UseCardAction extends TurnAction {
+    constructor(public card: cards.Card){super('UseCardAction')}
 }
 
-class ClaimBattlefield implements TurnAction {
+class ClaimBattlefield extends TurnAction {
+    constructor(){super('ClaimBattlefield');}
 }
 
-class Pass implements TurnAction {
+class Pass extends TurnAction {
+    constructor(){super('Pass');}
 }
 
-class RoundReset implements TurnAction {
-
+class RoundReset extends TurnAction {
+    constructor(){super('RoundReset');}
 }

@@ -25,6 +25,7 @@ var game = new destiny.GameState(p1, p2);
 var router = express();
 var server = http.createServer(router);
 var io = socketio.listen(server);
+io.set('log level',2);
 
 router.use(express.static(path.resolve(__dirname, 'client')));
 var messages = [];
@@ -36,6 +37,7 @@ io.on('connection', function (socket) {
     });
     
     socket.emit('state', JSON.stringify(game));
+    socket.emit('moves', JSON.stringify(game.p1.GetAvailableActions()));
 
     sockets.push(socket);
 

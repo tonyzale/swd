@@ -50,46 +50,7 @@
         transform: rotate(90deg) scale(1.5);
       }
     </style>
-    <script>
-      function ChatController($scope) {
-        /*global io*/
-        var socket = io.connect();
-
-        $scope.messages = [];
-        $scope.roster = [];
-        $scope.name = '';
-        $scope.text = '';
-
-        socket.on('connect', function () {
-          $scope.setName();
-        });
-
-        socket.on('message', function (msg) {
-          $scope.messages.push(msg);
-          $scope.$apply();
-        });
-
-        socket.on('roster', function (names) {
-          $scope.roster = names;
-          $scope.$apply();
-        });
-        
-        socket.on('state', function(state) {
-          $scope.game_state = JSON.parse(state);
-          $scope.$apply();
-        });
-
-        $scope.send = function send() {
-          console.log('Sending message:', $scope.text);
-          socket.emit('message', $scope.text);
-          $scope.text = '';
-        };
-
-        $scope.setName = function setName() {
-          socket.emit('identify', $scope.name);
-        };
-      }
-    </script>
+    <script src="/js/client_game.js"></script>
   </head>
   <body>
     <div class="container" ng-controller="ChatController">
@@ -102,6 +63,7 @@
       </div>
       <div class="page-header">
         <h1>Game State</h1>
+        <div><span ng-repeat="move in moves">{{move.name}}</span></div>
         <div ng-repeat="player in game_state.player">
           <h2>{{player.name}}</h2>
           <h3>Hand</h3>

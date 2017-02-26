@@ -30,6 +30,8 @@ export enum CardSubType {
 
 export class Card {
     constructor(public readonly json: any) {
+        this.id = Card.card_count;
+        ++Card.card_count;
         this.name = json['name'];
         this.code = json['code'];
         switch (json['faction_code']) {
@@ -112,6 +114,8 @@ export class Card {
     MakeCopy(): Card {
         return new Card(this.json);
     }
+    static card_count: number = 0;
+    public readonly id: number;
     public readonly name: string;
     public readonly code: string;
     public readonly faction: Faction;
