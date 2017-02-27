@@ -71,26 +71,18 @@
         <div ng-repeat="player in game_state.player">
           <h2>{{player.name}}</h2>
           <h3>Hand</h3>
-          <div class="card_wrap" ng-repeat="card in player.hand" ng-class="{exhausted: (card.state==1)}">
-            <card info="card"></card>
-          </div>
+          <card ng-repeat="card in player.hand" info="card"></card>
           <div class="all_character_wrap">
             <h3>Characters</h3>
             <div class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*-200 + 'px'}"}>
               <div>
-                <div class="card_wrap" ng-class="{exhausted: (card.state==1)}">
-                  <card info="char.card"></card>
-                </div>
+                <card info="char.card"></card>
               </div>
-              <div class="card_wrap" ng-repeat="upgrade in char.upgrades" ng-style="{'left': $index*-120 + 'px', 'top': $index*30 + 'px'}" ng-class="{compact: ($index!=0), exhausted: (upgrade.state==1)}">
-                <card info="upgrade.card"></card>
-              </div>
+              <card ng-repeat="upgrade in char.upgrades" info="upgrade.card" left="$index*-120 + 'px'" top="$index*30 + 'px'" ng-class="{compact: ($index!=0)}"></card>
             </div>
           </div>
           <h3>Supports</h3>
-          <div ng-repeat="support in player.supports" class="card_wrap" ng-class="{exhausted: (card.state==1)}">
-            <card info="support.card"></card>
-          </div>
+          <card info="support.card" ng-repeat="support in player.supports">
       </div>
       <div class="page-header">
         <h1>Chat Example</h1>

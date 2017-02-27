@@ -47,7 +47,9 @@
        return {
            restrict: 'E',
            scope: {
-               card: '=info'
+               card: '=info',
+               left: '=left',
+               top: '=top'
             },
            templateUrl: 'card.html'
        } 
