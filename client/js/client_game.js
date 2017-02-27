@@ -8,6 +8,8 @@
         $scope.roster = [];
         $scope.name = '';
         $scope.text = '';
+        
+        $scope.moves = [];
 
         socket.on('connect', function() {
             $scope.setName();
@@ -30,6 +32,18 @@
 
         socket.on('moves', function(moves) {
             $scope.moves = JSON.parse(moves);
+            $scope.clearMovesFromCards();
+            $scope.game_state.player.forEach(function (p){
+               p.hand.forEach(function(c){
+                   c.moves = $scope.movesForCard(c);
+               });
+               p.characters.forEach(function(char){
+                   char.card.moves = $scope.movesForCard(char.card);
+                   char.upgrades.forEach(function(u){
+                       u.card.moves = $scope.movesForCard(u.card);
+                   });
+               });
+            });
             $scope.$apply();
         });
 
@@ -41,6 +55,20 @@
 
         $scope.setName = function setName() {
             socket.emit('identify', $scope.name);
+        };
+        
+        $scope.clearMovesFromCards = function() {
+            $scope.game_state.player.forEach(function (p){
+               p.hand.forEach(function(c){
+                   c.moves = [];
+               });
+            });
+        };
+        
+        $scope.movesForCard = function(card) {
+            return $scope.moves.filter(function(m) {
+                return (m.card && (m.card.id == card.id)); 
+            });
         };
     }]);
     gameApp.directive('card', function() {

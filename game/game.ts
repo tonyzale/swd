@@ -38,7 +38,8 @@ export class Player {
         this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
         this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
         this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
-                this.characters.push(new Character(trooper, false));
+        trooper = card_db.cards_by_code['01002'].MakeCopy();
+        this.characters.push(new Character(trooper, false));
         this.characters[1].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
         this.characters[1].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
         this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
@@ -232,7 +233,11 @@ class InstallSupport extends TurnAction {
 }
 
 class Activate extends TurnAction {
-    constructor(public target: Character | Upgrade | Support){super('Activate');}
+    constructor(public target: Character | Upgrade | Support){
+        super('Activate');
+        this.card = target.card;
+    }
+    public card: cards.Card;
 }
 
 class Resolve extends TurnAction {
