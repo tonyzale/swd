@@ -1,0 +1,84 @@
+body {
+    padding-top: 60px;
+}
+
+.all_character_wrap {
+    height: 550px;
+}
+
+.character_wrap {
+    display: inline-block;
+    position: relative;
+}
+
+.card_wrap {
+    position: relative;
+    width: 150px;
+    display: inline-block;
+    padding: 0 3px 3px 0;
+    transition: width 0.25s;
+}
+
+.card_wrap.exhausted {
+    width: 210px;
+}
+
+.card_wrap.compact {
+    left: -75px;
+}
+
+.card {
+    position: relative;
+    display: block;
+    margin: auto;
+    width: 150px;
+    height: 210px;
+    transition: transform 0.25s;
+    z-index: 1;
+    transform: scale(1);
+}
+
+.card:hover {
+    transform: scale(1.5);
+    z-index: 2;
+}
+
+.card.exhausted {
+    transform: rotate(90deg) scale(1);
+}
+
+.card.exhausted:hover {
+    transform: rotate(90deg) scale(1.5);
+}
+
+.card.has_moves {
+    border: 3px solid lime;
+}
+
+.modal-overlay {
+    /* A dark translucent div that covers the whole screen */
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 0.8;
+}
+
+.modal-dialog {
+    /* A centered div above the overlay with a box shadow. */
+    z-index: 10000;
+    position: absolute;
+    width: 50%;
+    /* Default */
+    /* Center the dialog */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    background-color: #fff;
+    box-shadow: 4px 4px 80px #000;
+}

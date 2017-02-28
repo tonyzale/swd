@@ -5,54 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
-    <style>
-      body {
-        padding-top: 60px;
-      }
-      .all_character_wrap {
-        height: 550px;
-      }
-      .character_wrap {
-        display: inline-block;
-        position: relative;
-      }
-      .card_wrap {
-        position: relative;
-        width: 150px;
-        display:inline-block;
-        padding: 0 3px 3px 0;
-        transition: width 0.25s;
-      }
-      .card_wrap.exhausted {
-        width: 210px;
-      }
-      .card_wrap.compact {
-        left: -75px;
-      }
-      .card {
-        position: relative;
-        display: block;
-        margin: auto;
-        width: 150px;
-        height: 210px;
-        transition: transform 0.25s;
-        z-index: 1;
-        transform: scale(1);
-      }
-      .card:hover {
-        transform: scale(1.5);
-        z-index: 2;
-      }
-      .card.exhausted {
-        transform: rotate(90deg) scale(1);
-      }
-      .card.exhausted:hover {
-        transform: rotate(90deg) scale(1.5);
-      }
-      .card.has_moves {
-        border: 3px solid lime;
-      }
-    </style>
+    <link rel="stylesheet" href="/css/game.css">
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
@@ -61,6 +14,9 @@
   </head>
   <body>
     <div class="container" ng-controller="ChatController">
+      <div ng-show="modalService.showModal" class="modal-overlay">
+        <div class="modal-dialog" ng-click="modalService.showModal=false">You clicked: {{modalService.clickedCard.name}}</div>
+      </div>
       <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
           <div class="pull-right">

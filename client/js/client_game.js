@@ -1,6 +1,6 @@
 (function(angular) {
     var gameApp = angular.module('GameApp', []);
-    gameApp.controller('ChatController', ['$scope', function($scope) {
+    gameApp.controller('ChatController', ['$scope', 'modalService', function($scope, modalService) {
         /*global io*/
         var socket = io.connect();
 
@@ -10,6 +10,7 @@
         $scope.text = '';
         
         $scope.moves = [];
+        $scope.modalService = modalService;
 
         socket.on('connect', function() {
             $scope.setName();
@@ -71,7 +72,7 @@
             });
         };
     }]);
-    gameApp.directive('card', function() {
+    gameApp.directive('card', ['modalService', function(modalService) {
        return {
            restrict: 'E',
            scope: {
@@ -79,7 +80,19 @@
                left: '=left',
                top: '=top'
             },
-           templateUrl: 'card.html'
-       } 
+           templateUrl: 'card.html',
+           link: function(scope) {
+               scope.clickCard = function() {
+                   modalService.clickedCard = scope.card;
+                   modalService.showModal = true;
+               };
+           }
+       };
+    }]);
+    gameApp.factory('modalService', function(){
+        return {
+            showModal: false,
+            clickedCard: undefined
+        };
     });
 })(window.angular);
