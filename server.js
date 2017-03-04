@@ -12,8 +12,8 @@ var express = require('express');
 
 var destiny = require('./game/game');
 var card_db = new destiny.CardDB();
-var p1 = new destiny.Player('p1', card_db);
-var p2 = new destiny.Player('p2', card_db);
+var p1 = new destiny.Player('p1', 0, card_db);
+var p2 = new destiny.Player('p2', 1, card_db);
 var game = new destiny.GameState(p1, p2);
 
 //
@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
     });
     
     socket.emit('state', JSON.stringify(game));
-    socket.emit('moves', JSON.stringify(game.p1.GetAvailableActions()));
+    socket.emit('moves', JSON.stringify(game.GetAvailableActions(0)));
 
     sockets.push(socket);
 

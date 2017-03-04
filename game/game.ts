@@ -1,6 +1,8 @@
 /// <reference path="../typings/globals/node/index.d.ts" />
 /// <reference path="./cards.ts" />
+/// <reference path="./events.ts" />
 import cards = require('./cards');
+import events = require('./events');
 
 export class CardDB {
     constructor() {
@@ -23,6 +25,54 @@ export class GameState {
         this.player.push(p2);
     }
     
+    GetAvailableActions(player_id: number): TurnAction[] {
+        let active_player = this.player.filter(p => {return p.id == player_id;})[0];
+        let opponent = this.player.filter(p => {return p.id != player_id;})[0];
+        let out: TurnAction[] = [];
+        for (let c of active_player.hand) {
+            if (c.type == cards.CardType.Event) {
+                out = out.concat(events.GetEventActions(c, active_player, opponent));
+            } else if (c.type == cards.CardType.Upgrade) {
+                for (let char of active_player.characters) {
+                    out.push(new InstallUpgrade(c, char));
+                }
+            } else if (c.type == cards.CardType.Support) {
+                out.push(new InstallSupport(c));
+            }
+        }
+        let dice_pool: PlayDie[] = [];
+        for (let c of active_player.characters) {
+            if (c.state == CardState.Ready) {
+                out.push(new Activate(c));
+            }
+            for (let die of c.dice) {
+                if (die.state == DieState.InPlay) {
+                    dice_pool.push(die);
+                }
+            }
+            for (let upgrade of c.upgrades) {
+                for (let die of upgrade.dice) {
+                    if (die.state == DieState.InPlay) {
+                        dice_pool.push(die);
+                    }
+                }
+            }
+        }
+        for (let s of active_player.supports) {
+            if (s.state == CardState.Ready) {
+                out.push(new Activate(s));
+            }
+            for (let die of s.dice) {
+                if (die.state == DieState.InPlay) {
+                    dice_pool.push(die);
+                }
+            }
+        }
+        out.push(new Pass());
+        out.push(new ClaimBattlefield());
+        return out;
+    }
+    
     DebugString(): string {
         return `round ${this.round} [${this.player[0].DebugString()}] [${this.player[1].DebugString()}]`;
     }
@@ -32,7 +82,8 @@ export class GameState {
 }
 
 export class Player {
-    constructor(public readonly name: string, card_db: CardDB) {
+    constructor(public readonly name: string, public readonly id: number, card_db: CardDB) {
+        console.log('card_db ' + card_db);
         let trooper = card_db.cards_by_code['01002'].MakeCopy();
         this.characters.push(new Character(trooper, false));
         this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
@@ -61,58 +112,12 @@ export class Player {
         return out;
     }
     
-    GetAvailableActions(): TurnAction[] {
-        let out: TurnAction[] = [];
-        for (let c of this.hand) {
-            if (c.type == cards.CardType.Event) {
-                out.push(new PlayEvent(c));
-            } else if (c.type == cards.CardType.Upgrade) {
-                for (let char of this.characters) {
-                    out.push(new InstallUpgrade(c, char));
-                }
-            } else if (c.type == cards.CardType.Support) {
-                out.push(new InstallSupport(c));
-            }
-        }
-        let dice_pool: PlayDie[] = [];
-        for (let c of this.characters) {
-            if (c.state == CardState.Ready) {
-                out.push(new Activate(c));
-            }
-            for (let die of c.dice) {
-                if (die.state == DieState.InPlay) {
-                    dice_pool.push(die);
-                }
-            }
-            for (let upgrade of c.upgrades) {
-                for (let die of upgrade.dice) {
-                    if (die.state == DieState.InPlay) {
-                        dice_pool.push(die);
-                    }
-                }
-            }
-        }
-        for (let s of this.supports) {
-            if (s.state == CardState.Ready) {
-                out.push(new Activate(s));
-            }
-            for (let die of s.dice) {
-                if (die.state == DieState.InPlay) {
-                    dice_pool.push(die);
-                }
-            }
-        }
-        out.push(new Pass());
-        out.push(new ClaimBattlefield());
-        return out;
-    }
-    
     hand: cards.Card[] = [];
     draw_deck: cards.Card[];
     discard_pile: cards.Card[];
     characters: Character[] = [];
     supports: Support[] = [];
-    resources: number;
+    resources: number = 2;
     battlefield: cards.Card;
 }
 
@@ -163,7 +168,7 @@ class Upgrade {
     public state = CardState.Ready;
 }
 
-class Character {
+export class Character {
     constructor(public readonly card: cards.Card, public readonly elite: boolean) {
         if (card.type != cards.CardType.Character) {
             throw new RangeError('Not Character Card');
@@ -184,6 +189,7 @@ class Character {
         return out;
     }
     public damage = 0;
+    public shields = 0;
     public state = CardState.Ready;
     public upgrades: Upgrade[] = [];
     public dice: PlayDie[] = [];
@@ -216,23 +222,27 @@ class TurnRecord {
     turn_action: TurnAction;
 }
 
-class TurnAction {
+export class TurnAction {
     constructor(public name: string){}
 }
 
-class PlayEvent extends TurnAction {
-    constructor(public card: cards.Card){super('PlayEvent');}
+export class PlayEventOnCard extends TurnAction {
+    constructor(public card: cards.Card, public target: Character | Upgrade | Support){super('PlayEventOnCard');}
 }
 
-class InstallUpgrade extends TurnAction {
+export class PlayEventOnPlayer extends TurnAction {
+    constructor(public card: cards.Card, public player_id: number) {super('PlayEventOnPlayer');}
+}
+
+export class InstallUpgrade extends TurnAction {
     constructor(public card: cards.Card, public target: Character){super('InstallUpgrade');}
 }
 
-class InstallSupport extends TurnAction {
+export class InstallSupport extends TurnAction {
     constructor(public card: cards.Card){super('InstallSupport');}
 }
 
-class Activate extends TurnAction {
+export class Activate extends TurnAction {
     constructor(public target: Character | Upgrade | Support){
         super('Activate');
         this.card = target.card;
@@ -240,26 +250,26 @@ class Activate extends TurnAction {
     public card: cards.Card;
 }
 
-class Resolve extends TurnAction {
+export class Resolve extends TurnAction {
     constructor(public side_type: cards.SideType){super('Resolve')}
 }
 
-class Discard extends TurnAction {
+export class Discard extends TurnAction {
     constructor(public card: cards.Card){super('Discard');}
 }
 
-class UseCardAction extends TurnAction {
+export class UseCardAction extends TurnAction {
     constructor(public card: cards.Card){super('UseCardAction')}
 }
 
-class ClaimBattlefield extends TurnAction {
+export class ClaimBattlefield extends TurnAction {
     constructor(){super('ClaimBattlefield');}
 }
 
-class Pass extends TurnAction {
+export class Pass extends TurnAction {
     constructor(){super('Pass');}
 }
 
-class RoundReset extends TurnAction {
+export class RoundReset extends TurnAction {
     constructor(){super('RoundReset');}
 }

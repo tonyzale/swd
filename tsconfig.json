@@ -8,6 +8,7 @@
     },
     "files": [
         "game/cards.ts",
-        "game/game.ts"
+        "game/game.ts",
+        "game/events.ts"
     ]
 }
