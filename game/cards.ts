@@ -28,6 +28,8 @@ export enum CardSubType {
     Ability,
 }
 
+export type CardId = number;
+
 export class Card {
     constructor(public readonly json: any) {
         this.id = Card.card_count;
@@ -115,7 +117,7 @@ export class Card {
         return new Card(this.json);
     }
     static card_count: number = 0;
-    public readonly id: number;
+    public readonly id: CardId;
     public readonly name: string;
     public readonly code: string;
     public readonly faction: Faction;

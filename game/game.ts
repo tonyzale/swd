@@ -113,8 +113,9 @@ export class Player {
     }
     
     hand: cards.Card[] = [];
-    draw_deck: cards.Card[];
-    discard_pile: cards.Card[];
+    draw_deck: cards.Card[] = [];
+    discard_pile: cards.Card[] = [];
+    out_pile: cards.Card[] = [];
     characters: Character[] = [];
     supports: Support[] = [];
     resources: number = 2;
@@ -272,4 +273,146 @@ export class Pass extends TurnAction {
 
 export class RoundReset extends TurnAction {
     constructor(){super('RoundReset');}
+}
+
+
+export interface Operation {
+    str(): string;
+    MutateState(state: GameState);
+}
+
+export interface Destination {
+    str(): string;
+    PutCardAtDestination(card: cards.Card, state: GameState);
+}
+
+export class DiscardPile implements Destination {
+    constructor(public readonly player_id: number) {}
+    str(): string { return "DiscardPile " + this.player_id; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        state.player[this.player_id].discard_pile.push(card);
+    }
+}
+
+export class OutOfGame implements Destination {
+    constructor(public readonly player_id: number) {}
+    str(): string { return "OutOfGame"; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        state.player[this.player_id].out_pile.push(card);
+    }
+}
+
+export class NewCharacter implements Destination {
+    constructor(public readonly player_id: number, public elite: boolean) {}
+    str(): string { return `NewCharacter ${this.player_id}`; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        state.player[this.player_id].characters.push(new Character(card, this.elite));
+    }
+}
+
+export class NewUpgrade implements Destination {
+    constructor(public readonly player_id: number, public readonly character_card_id: cards.CardId) {}
+    str(): string { return `NewUpgrade ${this.player_id} for ${this.character_card_id}`; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        let char: Character;
+        for (char of state.player[this.player_id].characters) {
+            if (char.card.id == this.character_card_id) {
+                char.upgrades.push(new Upgrade(card));
+                return;
+            }
+        }
+        throw new Error('Couldn\'t find character!');
+    }
+}
+
+export class NewSupport implements Destination {
+    constructor(public readonly player_id: number) {}
+    str(): string { return `NewSupport ${this.player_id}`; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        state.player[this.player_id].supports.push(new Support(card));
+    }
+}
+
+export class PlayerHand implements Destination {
+    constructor(public readonly player_id: number) {}
+    str(): string { return `PlayerHand ${this.player_id}`; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        state.player[this.player_id].hand.push(card);
+    }    
+}
+
+export class BottomDrawPile implements Destination {
+    constructor(public readonly player_id: number) {}
+    str(): string { return `BottomDrawPile ${this.player_id}`; }
+    PutCardAtDestination(card: cards.Card, state: GameState) {
+        state.player[this.player_id].draw_deck.splice(0, 0, card);
+    }
+}
+
+function FindAndRemoveCard(target_card: cards.CardId, card_array: cards.Card[]): cards.Card {
+    for (let i = 0; i < card_array.length; ++i) {
+        if (card_array[i].id == target_card) {
+            return card_array.splice(i, 1)[0];
+        }
+    }
+    return undefined;
+}
+
+export class MoveCard implements Operation {
+    constructor(public readonly card_id: cards.CardId, public readonly destination: Destination){}
+    str(): string { return `MoveCard ${this.card_id} to ${this.destination.str()}`; }
+    MutateState(state: GameState) {
+        let card: cards.Card;
+        for (let player of state.player) {
+            card = FindAndRemoveCard(this.card_id, player.hand);
+            if (card) break;
+            card = FindAndRemoveCard(this.card_id, player.discard_pile);
+            if (card) break;
+            card = FindAndRemoveCard(this.card_id, player.out_pile);
+            if (card) break;
+            for (let i = 0; i < player.characters.length; ++i) {
+                if (player.characters[i].card.id == this.card_id) {
+                    card = player.characters[i].card;
+                    if (player.characters[i].upgrades.length > 0) {
+                        throw new Error("Moving non-empty character");
+                    }
+                    player.characters.splice(i, 1);
+                    break;
+                }
+                for (let j = 0; j < player.characters[i].upgrades.length; ++j) {
+                    if (player.characters[i].upgrades[j].card.id == this.card_id) {
+                        card = player.characters[i].upgrades[j].card;
+                        player.characters[i].upgrades.splice(j, 1);
+                        break;
+                    }
+                }
+            }
+            if (card) break;
+
+            for (let i = 0; i < player.supports.length; ++i) {
+                if (player.supports[i].card.id == this.card_id) {
+                    card = player.supports[i].card;
+                    player.supports.splice(i, 1);
+                    break;
+                }   
+            }
+            if (card) {
+                break;   
+            }
+        }
+        if (card) {
+            this.destination.PutCardAtDestination(card, state);
+        } else {
+            throw new Error('Couldn\'t find card');
+        }
+    }
+}
+
+export class DrawCard implements Operation {
+    constructor(public readonly player_id: number){}
+    str(): string { return `DrawCard ${this.player_id}`; }
+    MutateState(state: GameState) {
+        let p = state.player[this.player_id];
+        p.hand.push(p.draw_deck.pop());
+    }
 }
