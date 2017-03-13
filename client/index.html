@@ -15,7 +15,7 @@
   <body>
     <div class="container" ng-controller="ChatController">
       <div ng-show="modalService.showModal" class="modal-overlay">
-        <div class="modal-dialog" ng-click="modalService.showModal=false">You clicked: {{modalService.clickedCard.name}}</div>
+        <div class="modal-dialog">You clicked: {{modalService.clickedCard.name}} {{modalService.clickedCard.id}}</div>
       </div>
       <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
