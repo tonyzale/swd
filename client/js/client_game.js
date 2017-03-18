@@ -7,7 +7,18 @@
         $scope.text = '';
 
         $scope.moves = [];
-        $scope.modalService = modalService;
+        $scope.show_modal = false;
+        $scope.socketService = socketService;
+        $scope.modal_data = {
+            id: 'modalid',
+            title: 'modal title',
+            text: 'Make a choice:',
+            options: [{text:'Action A', id:'o1'}, {text:'Action B', id:'o2'}]
+        };
+        modalService.showModal = function(data) {
+            $scope.show_modal = true;
+            $scope.modal_data = data;
+        }
 
         $scope.selectMove = function(move) {
             socketService.socket.emit('move-selection', move);
@@ -51,6 +62,11 @@
             });
             $scope.$apply();
         });
+        
+        socketService.socket.on('modal', function(data){
+            $scope.modal_data = JSON.parse(data);
+            $scope.$apply();
+        });
 
         $scope.send = function send() {
             console.log('Sending message:', $scope.text);
@@ -81,14 +97,24 @@
             restrict: 'E',
             scope: {
                 card: '=info',
-                left: '=left',
-                top: '=top'
+                left: '=',
+                top: '='
             },
             templateUrl: 'card.html',
             link: function(scope) {
                 scope.clickCard = function() {
-                    modalService.clickedCard = scope.card;
-                    modalService.showModal = true;
+                    modalService.showModal({
+                        id: 'modalid',
+                        title: 'Clicked ' + scope.card.name,
+                        text: 'Make a choice:',
+                        options: [{
+                            text: 'Action A',
+                            id: 'o1'
+                        }, {
+                            text: 'Action B',
+                            id: 'o2'
+                        }]
+                    });
                 };
             }
         };
@@ -96,13 +122,25 @@
     gameApp.directive('modal', function(){
         return {
             restrict: 'E',
-            templateUrl: 'modal.html'
+            scope: {
+                content: '=',
+                socket: '=',
+                show: '='
+            },
+            templateUrl: 'modal.html',
+            link: function(scope) {
+                scope.clickedOption = function(option) {
+                    scope.socket.emit('choice', JSON.stringify({
+                        content_id: scope.content.id,
+                        choice: option
+                    }));
+                }
+            }
         };
     });
     gameApp.factory('modalService', function() {
         return {
-            showModal: false,
-            clickedCard: undefined
+            showModal: function(data){throw new Error('using showModal before init');}
         };
     });
     gameApp.factory('socketService', function() {

@@ -81,3 +81,7 @@ body {
     background-color: #ddd;
     box-shadow: 4px 4px 80px #000;
 }
+
+.modal_option {
+    cursor: pointer;
+}

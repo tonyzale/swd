@@ -69,6 +69,15 @@ io.on('connection', function (socket) {
       });
     });
     
+    socket.on('choice', function(choice) {
+      console.log('Got choice: ' + choice);
+      socket.emit('modal', JSON.stringify({
+        id: 'gotchoice',
+        title: 'Received',
+        text: 'Got your choice of ' + choice
+      }));
+    });
+
     socket.on('move-selection', function(move) {
       socket.get('name', function(err, name) {
         var data = {
