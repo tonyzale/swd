@@ -93,13 +93,12 @@
             }
         };
     }]);
-    gameApp.factory('modalService', ['socketService', function(socketService) {
+    gameApp.factory('modalService', function() {
         return {
-            socketService: socketService,
             showModal: false,
             clickedCard: undefined
         };
-    }]);
+    });
     gameApp.factory('socketService', function() {
         return {
             /*global io*/
