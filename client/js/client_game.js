@@ -9,6 +9,10 @@
         $scope.moves = [];
         $scope.modalService = modalService;
 
+        $scope.selectMove = function(move) {
+            socketService.socket.emit('move-selection', move);
+        };
+
         socketService.socket.on('connect', function() {
             $scope.setName();
         });
@@ -40,6 +44,9 @@
                     char.upgrades.forEach(function(u) {
                         u.card.moves = $scope.movesForCard(u.card);
                     });
+                });
+                p.supports.forEach(function(support) {
+                    support.card.moves = $scope.movesForCard(support.card);
                 });
             });
             $scope.$apply();
@@ -86,12 +93,13 @@
             }
         };
     }]);
-    gameApp.factory('modalService', function() {
+    gameApp.factory('modalService', ['socketService', function(socketService) {
         return {
+            socketService: socketService,
             showModal: false,
             clickedCard: undefined
         };
-    });
+    }]);
     gameApp.factory('socketService', function() {
         return {
             /*global io*/

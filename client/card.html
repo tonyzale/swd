@@ -1,6 +1,6 @@
 <div class = "card_wrap" ng-class="{exhausted: (card.state==1)}">
      <img class="card"
-          ng-click="clickCard()"
+          ng-click="(card.moves.length > 0) && clickCard()"
           ng-class="{exhausted: (card.state==1), has_moves: (card.moves.length > 0)}"
           ng-src="{{card.json.imagesrc}}"
           ng-style="{'left': left, 'top': top}" />

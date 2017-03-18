@@ -225,10 +225,11 @@ class TurnRecord {
 
 export class TurnAction {
     constructor(public name: string){}
+    
 }
 
 export class PlayEventOnCard extends TurnAction {
-    constructor(public card: cards.Card, public target: Character | Upgrade | Support){super('PlayEventOnCard');}
+    constructor(public card: cards.Card, public target: Character | Upgrade | Support){super('PlayEventOnCard ' + target.card.name);}
 }
 
 export class PlayEventOnPlayer extends TurnAction {
@@ -236,7 +237,7 @@ export class PlayEventOnPlayer extends TurnAction {
 }
 
 export class InstallUpgrade extends TurnAction {
-    constructor(public card: cards.Card, public target: Character){super('InstallUpgrade');}
+    constructor(public card: cards.Card, public target: Character){super('InstallUpgrade on ' + target.card.name);}
 }
 
 export class InstallSupport extends TurnAction {

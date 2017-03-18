@@ -68,6 +68,17 @@ io.on('connection', function (socket) {
         updateRoster();
       });
     });
+    
+    socket.on('move-selection', function(move) {
+      socket.get('name', function(err, name) {
+        var data = {
+          name: name,
+          text: 'Played: ' + move.name
+        };
+        broadcast('message', data);
+        messages.push(data);
+      });
+    });
   });
 
 function updateRoster() {
