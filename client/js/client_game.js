@@ -93,6 +93,12 @@
             }
         };
     }]);
+    gameApp.directive('modal', function(){
+        return {
+            restrict: 'E',
+            templateUrl: 'modal.html'
+        };
+    });
     gameApp.factory('modalService', function() {
         return {
             showModal: false,

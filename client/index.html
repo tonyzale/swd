@@ -14,15 +14,7 @@
   </head>
   <body>
     <div class="container" ng-controller="ChatController">
-      <div ng-click="modalService.showModal=false" ng-show="modalService.showModal" class="modal-overlay">
-        <div class="modal-dialog">
-          <div>You clicked: {{modalService.clickedCard.name}} {{modalService.clickedCard.id}}</div>
-          <div>Actions</div>
-          <div ng-click="selectMove(move);$event.stopPropagation()" ng-repeat="move in modalService.clickedCard.moves">
-            {{move.name}}
-          </div>
-        </div>
-      </div>
+      <modal></modal>
       <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
           <div class="pull-right">
