@@ -103,18 +103,19 @@
             templateUrl: 'card.html',
             link: function(scope) {
                 scope.clickCard = function() {
-                    modalService.showModal({
+                    var modal_data = {
                         id: 'modalid',
-                        title: 'Clicked ' + scope.card.name,
-                        text: 'Make a choice:',
-                        options: [{
-                            text: 'Action A',
-                            id: 'o1'
-                        }, {
-                            text: 'Action B',
-                            id: 'o2'
-                        }]
+                        title: scope.card.name,
+                        text: 'Options:',
+                        options: []
+                    };
+                    scope.card.moves.forEach(function(m, i) {
+                       modal_data.options.push({
+                           id: i,
+                           text: m.name
+                       }) 
                     });
+                    modalService.showModal(modal_data);
                 };
             }
         };
