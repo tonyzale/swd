@@ -85,3 +85,10 @@ body {
 .modal_option {
     cursor: pointer;
 }
+
+.close {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    padding-right: 2px;
+}

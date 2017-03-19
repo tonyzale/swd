@@ -1,5 +1,6 @@
 <div ng-click="show=false" ng-show="show" class="modal-overlay">
-    <div class="modal-dialog">
+    <div ng-click="$event.stopPropagation()" class="modal-dialog">
+        <span class="close" ng-click="show=false">×</span>
         <h3>{{content.title}}</h3>
         <div>{{content.text}}</div>
         <div class="modal_option" ng-click="clickedOption($index);$event.stopPropagation()" ng-repeat="option in content.options">
