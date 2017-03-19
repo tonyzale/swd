@@ -3,7 +3,7 @@
         <span class="close" ng-click="show=false">×</span>
         <h3>{{content.title}}</h3>
         <div>{{content.text}}</div>
-        <div class="modal_option" ng-click="clickedOption($index);$event.stopPropagation()" ng-repeat="option in content.options">
+        <div class="modal_option" ng-click="clickedOption($index)" ng-repeat="option in content.options">
             {{option.text}}
         </div>
     </div>
