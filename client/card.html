@@ -1,7 +1,23 @@
-<div class = "card_wrap" ng-class="{exhausted: (card.state==1)}">
-     <img class="card"
-          ng-click="(card.moves.length > 0) && clickCard()"
-          ng-class="{exhausted: (card.state==1), has_moves: (card.moves.length > 0)}"
-          ng-src="{{card.json.imagesrc}}"
-          ng-style="{'left': left, 'top': top}" />
+<div class = "card_wrap"
+     ng-click="(card.moves.length > 0) && clickCard()"
+     ng-class="{exhausted: (card.state==1)}"
+     ng-style="{
+          'left': left,
+          'top': top,
+          'border': borderCss(),
+          'margin': '2px',
+          'width': wrapWidth()
+     }">
+     <div style="position:relative">
+          <img class="card"
+               ng-src="{{card.json.imagesrc}}"
+               ng-style="{
+                    'width': card_width + 'px',
+                    'height': card_height + 'px'
+               }" />
+          <div class="card_overlay"
+               ng-style="{
+                    'top': (card_height * 0.857) + 'px'
+               }">{{overlay}}</div>
+     </div>
 </div>

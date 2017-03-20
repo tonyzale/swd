@@ -98,11 +98,31 @@
             scope: {
                 card: '=info',
                 left: '=',
-                top: '='
+                top: '=',
+                overlay: '='
             },
             templateUrl: 'card.html',
             link: function(scope) {
+                scope.card_width = 150;
+                scope.card_height = scope.card_width * 1.4;
+                scope.border_width = 3;
+                scope.wrapWidth = function() {
+                    if (scope.card.state == 1) {
+                        return scope.card_height;
+                    } else {
+                        return scope.card_width;
+                    }
+                }
+                scope.borderCss = function() {
+                    if (scope.card.moves && scope.card.moves.length > 0) {
+                        return '3px solid lime';
+                    } else {
+                        return '3px solid rgba(0,0,0,0)';
+                    }
+                }
                 scope.clickCard = function() {
+                    scope.card.state = 1;
+                    return;
                     var modal_data = {
                         id: 'modalid',
                         title: scope.card.name,

@@ -13,13 +13,9 @@ body {
 
 .card_wrap {
     position: relative;
-    width: 156px;
     display: inline-block;
-    transition: width 0.25s;
-}
-
-.card_wrap.exhausted {
-    width: 210px;
+    transition: width 0.25s, transform 0.25s;
+    z-index: 1;
 }
 
 .card_wrap.compact {
@@ -30,28 +26,30 @@ body {
     position: relative;
     display: block;
     margin: auto;
-    width: 150px;
-    height: 210px;
-    transition: transform 0.25s;
-    z-index: 1;
-    transform: scale(1);
 }
 
-.card:hover {
+.card_wrap:hover {
     transform: scale(1.5);
     z-index: 2;
 }
 
-.card.exhausted {
+.card_wrap.exhausted {
     transform: rotate(90deg) scale(1);
 }
 
-.card.exhausted:hover {
+.card_wrap.exhausted:hover {
     transform: rotate(90deg) scale(1.5);
 }
 
-.card.has_moves {
-    border: 3px solid lime;
+.card_overlay {
+    position: absolute;
+    left: 5px;
+    color: white;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
 
 .modal-overlay {

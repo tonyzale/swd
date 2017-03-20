@@ -27,14 +27,13 @@
         <div ng-repeat="player in game_state.player">
           <h2>{{player.name}}</h2>
           <h3>Resources: {{player.resources}}</h3>
-          <h3>Actions: {{}}</h3>
           <h3>Hand</h3>
           <card ng-repeat="card in player.hand" info="card"></card>
           <div class="all_character_wrap">
             <h3>Characters</h3>
             <div class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*-200 + 'px'}"}>
               <div>
-                <card info="char.card"></card>
+                <card info="char.card" overlay="'Damage: ' + char.damage + '  Shields: ' + char.shields"></card>
               </div>
               <card ng-repeat="upgrade in char.upgrades" info="upgrade.card" left="$index*-120 + 'px'" top="$index*30 + 'px'" ng-class="{compact: ($index!=0)}"></card>
             </div>
