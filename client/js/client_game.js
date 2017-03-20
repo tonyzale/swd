@@ -5,7 +5,7 @@
         $scope.roster = [];
         $scope.name = '';
         $scope.text = '';
-        $scope.card_width = 150;
+        $scope.card_width = 100;
         $scope.card_height = $scope.card_width * 1.4;
 
         $scope.moves = [];
@@ -123,8 +123,6 @@
                     }
                 }
                 scope.clickCard = function() {
-                    scope.card.state = 1;
-                    return;
                     var modal_data = {
                         id: 'modalid',
                         title: scope.card.name,
