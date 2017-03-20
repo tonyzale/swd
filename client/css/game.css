@@ -2,10 +2,6 @@ body {
     padding-top: 60px;
 }
 
-.all_character_wrap {
-    height: 550px;
-}
-
 .character_wrap {
     display: inline-block;
     position: relative;
@@ -16,10 +12,6 @@ body {
     display: inline-block;
     transition: width 0.25s, transform 0.25s;
     z-index: 1;
-}
-
-.card_wrap.compact {
-    left: -75px;
 }
 
 .card {

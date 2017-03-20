@@ -5,6 +5,8 @@
         $scope.roster = [];
         $scope.name = '';
         $scope.text = '';
+        $scope.card_width = 150;
+        $scope.card_height = $scope.card_width * 1.4;
 
         $scope.moves = [];
         $scope.show_modal = false;
@@ -99,12 +101,12 @@
                 card: '=info',
                 left: '=',
                 top: '=',
-                overlay: '='
+                overlay: '=',
+                card_width: '=width',
+                card_height: '=height'
             },
             templateUrl: 'card.html',
             link: function(scope) {
-                scope.card_width = 150;
-                scope.card_height = scope.card_width * 1.4;
                 scope.border_width = 3;
                 scope.wrapWidth = function() {
                     if (scope.card.state == 1) {
