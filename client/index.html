@@ -43,15 +43,22 @@
           <card ng-repeat="card in player.hand" info="card" width="card_width" height="card_height"></card>
           <h3>Characters</h3>
           <div class="all_character_wrap" ng-style="{'height':(2.6*card_height) + 'px'}">
-            <div class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*(-1.333*card_width) + 'px'}"}>
+            <div style="border:1px solid black" class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*(-1.333*card_width) + 'px'}"}>
               <div>
-                <card info="char.card" width="card_width" height="card_height" overlay="'Damage: ' + char.damage + '  Shields: ' + char.shields"></card>
+                <card style="border:1px solid blue" info="char.card" width="card_width" height="card_height" overlay="'Damage: ' + char.damage + '  Shields: ' + char.shields"></card>
               </div>
-              <card ng-repeat="upgrade in char.upgrades" info="upgrade.card" width="card_width" height="card_height" left="$index*(-0.8*card_width) + 'px'" top="$index*(0.142*card_height) + 'px'"></card>
+              <div>
+                <card style="border:1px solid blue" ng-repeat="upgrade in char.upgrades" info="upgrade.card" width="card_width" height="card_height" left="$index*(-0.8*card_width) + 'px'" top="$index*(0.142*card_height) + 'px'"></card>
+              </div>
+            </div>
+            <div style="border:1px solid green" class="character_wrap" ng-repeat="support in player.supports" ng-style="{'left': player.characters.length*(-card_width) + 'px'}"}>
+              <div>
+                <card style="border:1px solid blue" info="support.card" width="card_width" height="card_height"></card>
+              </div>
+              <div class="card_wrap" style="margin: 2px" ng-style="{'height': card_height + 6 + 'px'}">
+              </div>
             </div>
           </div>
-          <h3>Supports</h3>
-          <card info="support.card" width="card_width" height="card_height" ng-repeat="support in player.supports">
       </div>
       <div class="page-header">
         <h1>Chat Example</h1>

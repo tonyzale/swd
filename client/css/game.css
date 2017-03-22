@@ -5,6 +5,7 @@ body {
 .character_wrap {
     display: inline-block;
     position: relative;
+    min-height: 310px;
 }
 
 .draw_deck_wrap {

@@ -96,6 +96,8 @@ export class Player {
         this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
         this.hand.push(card_db.cards_by_code['01159'].MakeCopy());
         this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));
+        this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));
+
     }
     
     DebugString(): string {
