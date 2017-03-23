@@ -109,6 +109,7 @@ export class Card {
         this.die = (json['has_die'] ? new Die(json["sides"]) : undefined);
         this.cost = ((typeof json['cost'] === 'number') ? json['cost'] : undefined);
         this.is_unique = json['is_unique'];
+        this.full_name = json['set_name'] + ' #' + json['position'];
     }
     DebugString(): string {
         return `${this.name} - ${CardType[this.type]} - ${this.code} ${(this.die ? ('- ' + this.die.DebugString()) : '')}`;
@@ -127,6 +128,7 @@ export class Card {
     public readonly die: Die;
     public readonly cost: number;
     public readonly is_unique: boolean;
+    public readonly full_name: string;
 }
 
 export class Die {

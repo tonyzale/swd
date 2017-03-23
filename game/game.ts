@@ -10,14 +10,17 @@ export class CardDB {
         let all_cards = JSON.parse(fs.readFileSync('game/cards.json').toString());
         this.cards = [];
         this.cards_by_code = {};
+        this.cards_by_full_name = {};
         for (let card of all_cards) {
             let new_card = new cards.Card(card);
             this.cards.push(new_card);
             this.cards_by_code[new_card.code] = new_card;
+            this.cards_by_full_name[new_card.full_name] = new_card;
         }
     }
     public readonly cards: cards.Card[];
     public readonly cards_by_code: {[id: string]: cards.Card};
+    public readonly cards_by_full_name: {[id: string]: cards.Card};
 }
 export class GameState {
     constructor(public p1: Player, public p2: Player) {
@@ -81,23 +84,48 @@ export class GameState {
     active_player: number = 0;
 }
 
-export class Player {
-    constructor(public readonly name: string, public readonly id: number, card_db: CardDB) {
-        console.log('card_db ' + card_db);
-        let trooper = card_db.cards_by_code['01002'].MakeCopy();
-        this.characters.push(new Character(trooper, false));
-        this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
-        this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
-        this.characters[0].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
-        trooper = card_db.cards_by_code['01002'].MakeCopy();
-        this.characters.push(new Character(trooper, false));
-        this.characters[1].upgrades.push(new Upgrade(card_db.cards_by_code['01007'].MakeCopy()));
-        this.characters[1].upgrades.push(new Upgrade(card_db.cards_by_code['01008'].MakeCopy()));
-        this.hand.push(card_db.cards_by_code['01157'].MakeCopy());
-        this.hand.push(card_db.cards_by_code['01159'].MakeCopy());
-        this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));
-        this.supports.push(new Support(card_db.cards_by_code['01005'].MakeCopy()));
+function shuffle (array) {
+  let i = 0
+    , j = 0
+    , temp = null
 
+  for (i = array.length - 1; i > 0; i -= 1) {
+    j = Math.floor(Math.random() * (i + 1))
+    temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+}
+
+export class Player {
+    constructor(public readonly name: string, public readonly id: number, deck_text: string, card_db: CardDB) {
+        let lines = deck_text.split('\n');
+        for (let l of lines) {
+            let split = l.split('(');
+            if (split.length > 2) throw new Error('unexpected ( in line\n' + l);
+            if (split.length == 2) {
+                split = split[1].split(')');
+                let card = card_db.cards_by_full_name[split[0]];
+                if (card.type == cards.CardType.Character) {
+                    this.characters.push(new Character(card.MakeCopy(), l[0] == '2'));
+                } else if (card.type == cards.CardType.Support ||
+                           card.type == cards.CardType.Upgrade ||
+                           card.type == cards.CardType.Event) {
+                    this.draw_deck.push(card.MakeCopy());
+                    if (l[0] == '2') {
+                        this.draw_deck.push(card.MakeCopy());
+                    }
+                } else if (card.type == cards.CardType.Battlefield) {
+                    this.battlefield = card.MakeCopy();
+                } else {
+                    throw new Error('unknown card type ' + card.DebugString());
+                }
+            }
+        }
+        shuffle(this.draw_deck);
+        for (let i = 0; i < 5; ++i) {
+            this.hand.push(this.draw_deck.pop());
+        }
     }
     
     DebugString(): string {

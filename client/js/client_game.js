@@ -5,7 +5,7 @@
         $scope.roster = [];
         $scope.name = '';
         $scope.text = '';
-        $scope.card_width = 100;
+        $scope.card_width = 150;
         $scope.card_height = $scope.card_width * 1.4;
 
         $scope.moves = [];

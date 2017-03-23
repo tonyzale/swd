@@ -43,7 +43,7 @@
           <card ng-repeat="card in player.hand" info="card" width="card_width" height="card_height"></card>
           <h3>Characters</h3>
           <div class="all_character_wrap" ng-style="{'height':(2.6*card_height) + 'px'}">
-            <div style="border:1px solid black" class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*(-1.333*card_width) + 'px'}"}>
+            <div style="border:1px solid black" class="character_wrap" ng-repeat="char in player.characters" ng-style="{'left': $index*(1.333*card_width) + 'px'}"}>
               <div>
                 <card style="border:1px solid blue" info="char.card" width="card_width" height="card_height" overlay="'Damage: ' + char.damage + '  Shields: ' + char.shields"></card>
               </div>

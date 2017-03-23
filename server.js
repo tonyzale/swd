@@ -11,9 +11,11 @@ var socketio = require('socket.io');
 var express = require('express');
 
 var destiny = require('./game/game');
+var fs = require('fs');
 var card_db = new destiny.CardDB();
-var p1 = new destiny.Player('p1', 0, card_db);
-var p2 = new destiny.Player('p2', 1, card_db);
+var deck_text = fs.readFileSync('game/deck.txt').toString();
+var p1 = new destiny.Player('p1', 0, deck_text, card_db);
+var p2 = new destiny.Player('p2', 1, deck_text, card_db);
 var game = new destiny.GameState(p1, p2);
 
 //
