@@ -28,7 +28,7 @@ body {
 }
 
 .card_wrap:hover {
-    transform: scale(2.5);
+    transform: scale(1.5);
     z-index: 2;
 }
 
@@ -37,7 +37,7 @@ body {
 }
 
 .card_wrap.exhausted:hover {
-    transform: rotate(90deg) scale(2.5);
+    transform: rotate(90deg) scale(1.5);
 }
 
 .card_overlay {
