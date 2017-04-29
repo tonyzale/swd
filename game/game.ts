@@ -210,7 +210,7 @@ export class Character {
         }
     }
     DebugString(): string {
-        let out = `${this.card.name} damage: ${this.damage} `;
+        let out = `${this.card.name} damage: ${this.damage}`;
         for (let d of this.dice) {
             out += `${d.DebugString()} `;
         }
@@ -254,56 +254,55 @@ class TurnRecord {
 }
 
 export class TurnAction {
-    constructor(public name: string){}
-    
+    constructor(public serialized: any){}
 }
 
 export class PlayEventOnCard extends TurnAction {
-    constructor(public card: cards.Card, public target: Character | Upgrade | Support){super('PlayEventOnCard ' + target.card.name);}
+    constructor(public card: cards.Card, public target: Character | Upgrade | Support){super({action: 'PlayEventOnCard', card_id: card.id, target: target.card.id});}
 }
 
 export class PlayEventOnPlayer extends TurnAction {
-    constructor(public card: cards.Card, public player_id: number) {super('PlayEventOnPlayer');}
+    constructor(public card: cards.Card, public player_id: number) {super({action:'PlayEventOnPlayer', card_id: card.id, target: player_id});}
 }
 
 export class InstallUpgrade extends TurnAction {
-    constructor(public card: cards.Card, public target: Character){super('InstallUpgrade on ' + target.card.name);}
+    constructor(public card: cards.Card, public target: Character){super({action: 'InstallUpgrade', card_id: card.id, target: target.card.id});}
 }
 
 export class InstallSupport extends TurnAction {
-    constructor(public card: cards.Card){super('InstallSupport');}
+    constructor(public card: cards.Card){super({action: 'InstallSupport', card_id: card.id});}
 }
 
 export class Activate extends TurnAction {
     constructor(public target: Character | Upgrade | Support){
-        super('Activate');
+        super({action: 'Activate', card_id: target.card.id});
         this.card = target.card;
     }
     public card: cards.Card;
 }
 
 export class Resolve extends TurnAction {
-    constructor(public side_type: cards.SideType){super('Resolve')}
+    constructor(public side_type: cards.SideType){super({action:'Resolve'})}
 }
 
 export class Discard extends TurnAction {
-    constructor(public card: cards.Card){super('Discard');}
+    constructor(public card: cards.Card){super({action:'Discard', card_id: card.id});}
 }
 
 export class UseCardAction extends TurnAction {
-    constructor(public card: cards.Card){super('UseCardAction')}
+    constructor(public card: cards.Card){super({action: 'UseCardAction', card_id: card.id})}
 }
 
 export class ClaimBattlefield extends TurnAction {
-    constructor(){super('ClaimBattlefield');}
+    constructor(){super({action:'ClaimBattlefield'});}
 }
 
 export class Pass extends TurnAction {
-    constructor(){super('Pass');}
+    constructor(){super({action:'Pass'});}
 }
 
 export class RoundReset extends TurnAction {
-    constructor(){super('RoundReset');}
+    constructor(){super({action:'RoundReset'});}
 }
 
 

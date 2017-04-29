@@ -90,7 +90,7 @@
 
         $scope.movesForCard = function(card) {
             return $scope.moves.filter(function(m) {
-                return (m.card && (m.card.id == card.id));
+                return (m.card_id && (m.card_id == card.id));
             });
         };
     }]);
@@ -131,9 +131,10 @@
                     };
                     scope.card.moves.forEach(function(m, i) {
                        modal_data.options.push({
-                           id: i,
-                           text: m.name
-                       }) 
+                           card_id: scope.card.id,
+                           option_idx: i,
+                           text: m
+                       })
                     });
                     modalService.showModal(modal_data);
                 };
@@ -153,7 +154,7 @@
                 scope.clickedOption = function(option) {
                     scope.socket.emit('choice', JSON.stringify({
                         content_id: scope.content.id,
-                        choice: option
+                        choice: scope.content.options[option].text
                     }));
                 }
             }

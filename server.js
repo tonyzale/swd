@@ -39,7 +39,10 @@ io.on('connection', function (socket) {
     });
     
     socket.emit('state', JSON.stringify(game));
-    socket.emit('moves', JSON.stringify(game.GetAvailableActions(0)));
+    socket.emit('moves', JSON.stringify(
+      game.GetAvailableActions(0).map(function(v){
+        return v.serialized;
+      })));
 
     sockets.push(socket);
 
