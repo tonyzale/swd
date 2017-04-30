@@ -33,6 +33,7 @@ export class GameState {
         let opponent = this.player.filter(p => {return p.id != player_id;})[0];
         let out: TurnAction[] = [];
         for (let c of active_player.hand) {
+            if (c.cost > active_player.resources) continue;
             if (c.type == cards.CardType.Event) {
                 out = out.concat(events.GetEventActions(c, active_player, opponent));
             } else if (c.type == cards.CardType.Upgrade) {
