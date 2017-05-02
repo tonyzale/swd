@@ -1,2 +1,4 @@
 game/*.js.map
 game/*.js
+client/js/client_game.js
+server.js

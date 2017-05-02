@@ -1,4 +1,3 @@
-/// <reference path="../typings/globals/node/index.d.ts" />
 /// <reference path="./cards.ts" />
 /// <reference path="./events.ts" />
 import cards = require('./cards');
@@ -85,7 +84,7 @@ export class GameState {
     active_player: number = 0;
 }
 
-function shuffle (array) {
+function shuffle (array: any[]) {
   let i = 0
     , j = 0
     , temp = null
@@ -309,12 +308,12 @@ export class RoundReset extends TurnAction {
 
 export interface Operation {
     str(): string;
-    MutateState(state: GameState);
+    MutateState: (state: GameState)=>void;
 }
 
 export interface Destination {
     str(): string;
-    PutCardAtDestination(card: cards.Card, state: GameState);
+    PutCardAtDestination: (card: cards.Card, state: GameState)=>void;
 }
 
 export class DiscardPile implements Destination {

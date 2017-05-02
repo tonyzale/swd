@@ -1,22 +1,22 @@
+
 //
 // # SimpleServer
 //
 // A simple chat server using Socket.IO, Express, and Async.
 //
-var http = require('http');
-var path = require('path');
+import http = require('http');
+import path = require('path');
+import async = require('async');
+import socketio = require('socket.io');
+import express = require('express');
 
-var async = require('async');
-var socketio = require('socket.io');
-var express = require('express');
-
-var destiny = require('./game/game');
-var fs = require('fs');
-var card_db = new destiny.CardDB();
-var deck_text = fs.readFileSync('game/deck.txt').toString();
-var p1 = new destiny.Player('p1', 0, deck_text, card_db);
-var p2 = new destiny.Player('p2', 1, deck_text, card_db);
-var game = new destiny.GameState(p1, p2);
+import destiny = require('./game/game');
+import fs = require('fs');
+let card_db = new destiny.CardDB();
+let deck_text = fs.readFileSync('game/deck.txt').toString();
+let p1 = new destiny.Player('p1', 0, deck_text, card_db);
+let p2 = new destiny.Player('p2', 1, deck_text, card_db);
+let game = new destiny.GameState(p1, p2);
 
 //
 // ## SimpleServer `SimpleServer(obj)`
@@ -24,16 +24,16 @@ var game = new destiny.GameState(p1, p2);
 // Creates a new instance of SimpleServer with the following options:
 //  * `port` - The HTTP port to listen on. If `process.env.PORT` is set, _it overrides this value_.
 //
-var router = express();
-var server = http.createServer(router);
-var io = socketio.listen(server);
-io.set('log level',2);
+let router = express();
+let server = http.createServer(router);
+let game_io = socketio.listen(server);
+(<any>game_io).set('log level',2);
 
 router.use(express.static(path.resolve(__dirname, 'client')));
-var messages = [];
-var sockets = [];
+let messages = [];
+let sockets = [];
 
-io.on('connection', function (socket) {
+game_io.on('connection', function (socket) {
     messages.forEach(function (data) {
       socket.emit('message', data);
     });
@@ -52,13 +52,13 @@ io.on('connection', function (socket) {
     });
 
     socket.on('message', function (msg) {
-      var text = String(msg || '');
+      let text = String(msg || '');
 
       if (!text)
         return;
 
-      socket.get('name', function (err, name) {
-        var data = {
+      (<any>socket).get('name', function (err, name) {
+        let data = {
           name: name,
           text: text
         };
@@ -69,7 +69,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('identify', function (name) {
-      socket.set('name', String(name || 'Anonymous'), function (err) {
+      (<any>socket).set('name', String(name || 'Anonymous'), function (err) {
         updateRoster();
       });
     });
@@ -84,8 +84,8 @@ io.on('connection', function (socket) {
     });
 
     socket.on('move-selection', function(move) {
-      socket.get('name', function(err, name) {
-        var data = {
+      (<any>socket).get('name', function(err, name) {
+        let data = {
           name: name,
           text: 'Played: ' + move.name
         };
@@ -113,7 +113,7 @@ function broadcast(event, data) {
   });
 }
 
-server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
-  var addr = server.address();
+server.listen((<any>process.env).PORT || 3000, (<any>process.env).IP || "0.0.0.0", function(){
+  let addr = server.address();
   console.log("Chat server listening at", addr.address + ":" + addr.port);
 });
