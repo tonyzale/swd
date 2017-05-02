@@ -1,6 +1,28 @@
-(function(angular) {
+/// <reference path="../node_modules/@types/angular/index.d.ts" />
+/// <reference path="../node_modules/@types/socket.io-client/index.d.ts" />
+
+(function(angular: angular.IAngularStatic) {
     var gameApp = angular.module('GameApp', []);
-    gameApp.controller('ChatController', ['$scope', 'modalService', 'socketService', function($scope, modalService, socketService) {
+    interface GameScope extends angular.IScope {
+        messages: any[];
+        roster: any[];
+        name: string;
+        text: string;
+        card_width: number;
+        card_height: number;
+        moves: any[];
+        show_modal: boolean;
+        modal_data: any;
+        showModal: (any)=>void;
+        selectMove: (any)=>void;
+        movesForCard: (any)=>any[];
+        socketService: any;
+        setName: ()=>void;
+        clearMovesFromCards: ()=>void;
+        game_state: any;
+        send: ()=>void;
+    };
+    gameApp.controller('ChatController', ['$scope', 'modalService', 'socketService', function($scope: GameScope, modalService, socketService) {
         $scope.messages = [];
         $scope.roster = [];
         $scope.name = '';
@@ -30,12 +52,12 @@
             $scope.setName();
         });
 
-        socketService.socket.on('message', function(msg) {
+        socketService.socket.on('message', function(msg: string) {
             $scope.messages.push(msg);
             $scope.$apply();
         });
 
-        socketService.socket.on('roster', function(names) {
+        socketService.socket.on('roster', function(names: string[]) {
             $scope.roster = names;
             $scope.$apply();
         });
@@ -70,13 +92,13 @@
             $scope.$apply();
         });
 
-        $scope.send = function send() {
+        $scope.send = function() {
             console.log('Sending message:', $scope.text);
             socketService.socket.emit('message', $scope.text);
             $scope.text = '';
         };
 
-        $scope.setName = function setName() {
+        $scope.setName = function() {
             socketService.socket.emit('identify', $scope.name);
         };
 
@@ -95,6 +117,13 @@
         };
     }]);
     gameApp.directive('card', ['modalService', function(modalService) {
+        interface CardScope extends ng.IScope{
+            border_width, card_height, card_width:number;
+            card: any;
+            wrapWidth: ()=>number;
+            borderCss: ()=>string;
+            clickCard: ()=>void;
+        }
         return {
             restrict: 'E',
             scope: {
@@ -106,7 +135,7 @@
                 card_height: '=height'
             },
             templateUrl: 'card.html',
-            link: function(scope) {
+            link: function(scope: CardScope) {
                 scope.border_width = 3;
                 scope.wrapWidth = function() {
                     if (scope.card.state == 1) {
@@ -142,6 +171,11 @@
         };
     }]);
     gameApp.directive('modal', function(){
+        interface ModalScope extends ng.IScope {
+            clickedOption: (option: number)=>void;
+            content: any;
+            socket: SocketIOClient.Socket;
+        }
         return {
             restrict: 'E',
             scope: {
@@ -150,8 +184,8 @@
                 show: '='
             },
             templateUrl: 'modal.html',
-            link: function(scope) {
-                scope.clickedOption = function(option) {
+            link: function(scope: ModalScope) {
+                scope.clickedOption = function(option: number) {
                     scope.socket.emit('choice', JSON.stringify({
                         content_id: scope.content.id,
                         choice: scope.content.options[option].text
@@ -171,4 +205,4 @@
             socket: io.connect()
         };
     });
-})(window.angular);
+})((<any>window).angular);
