@@ -12,6 +12,7 @@
     "typescript": "2.1.6"
   },
   "devDependencies": {
+    "@types/angular": "^1.6.16",
     "@types/async": "^2.0.40",
     "@types/express": "^4.0.35",
     "@types/socket.io": "^1.4.29",
