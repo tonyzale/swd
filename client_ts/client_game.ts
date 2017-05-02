@@ -13,9 +13,9 @@
         moves: any[];
         show_modal: boolean;
         modal_data: any;
-        showModal: (any)=>void;
-        selectMove: (any)=>void;
-        movesForCard: (any)=>any[];
+        showModal: (d:any)=>void;
+        selectMove: (d:any)=>void;
+        movesForCard: (d:any)=>any[];
         socketService: any;
         setName: ()=>void;
         clearMovesFromCards: ()=>void;
@@ -39,7 +39,7 @@
             text: 'Make a choice:',
             options: [{text:'Action A', id:'o1'}, {text:'Action B', id:'o2'}]
         };
-        modalService.showModal = function(data) {
+        modalService.showModal = function(data: any) {
             $scope.show_modal = true;
             $scope.modal_data = data;
         }
@@ -62,32 +62,32 @@
             $scope.$apply();
         });
 
-        socketService.socket.on('state', function(state) {
+        socketService.socket.on('state', function(state: any) {
             $scope.game_state = JSON.parse(state);
             $scope.$apply();
         });
 
-        socketService.socket.on('moves', function(moves) {
+        socketService.socket.on('moves', function(moves: any) {
             $scope.moves = JSON.parse(moves);
             $scope.clearMovesFromCards();
-            $scope.game_state.player.forEach(function(p) {
-                p.hand.forEach(function(c) {
+            $scope.game_state.player.forEach(function(p: any) {
+                p.hand.forEach(function(c: any) {
                     c.moves = $scope.movesForCard(c);
                 });
-                p.characters.forEach(function(char) {
+                p.characters.forEach(function(char: any) {
                     char.card.moves = $scope.movesForCard(char.card);
-                    char.upgrades.forEach(function(u) {
+                    char.upgrades.forEach(function(u: any) {
                         u.card.moves = $scope.movesForCard(u.card);
                     });
                 });
-                p.supports.forEach(function(support) {
+                p.supports.forEach(function(support: any) {
                     support.card.moves = $scope.movesForCard(support.card);
                 });
             });
             $scope.$apply();
         });
         
-        socketService.socket.on('modal', function(data){
+        socketService.socket.on('modal', function(data: any){
             $scope.modal_data = JSON.parse(data);
             $scope.$apply();
         });
@@ -103,8 +103,8 @@
         };
 
         $scope.clearMovesFromCards = function() {
-            $scope.game_state.player.forEach(function(p) {
-                p.hand.forEach(function(c) {
+            $scope.game_state.player.forEach(function(p: any) {
+                p.hand.forEach(function(c: any) {
                     c.moves = [];
                 });
             });
@@ -118,7 +118,9 @@
     }]);
     gameApp.directive('card', ['modalService', function(modalService) {
         interface CardScope extends ng.IScope{
-            border_width, card_height, card_width:number;
+            border_width: number;
+            card_height: number;
+            card_width:number;
             card: any;
             wrapWidth: ()=>number;
             borderCss: ()=>string;
@@ -158,7 +160,7 @@
                         text: 'Options:',
                         options: []
                     };
-                    scope.card.moves.forEach(function(m, i) {
+                    scope.card.moves.forEach(function(m: any, i: number) {
                        modal_data.options.push({
                            card_id: scope.card.id,
                            option_idx: i,

@@ -1,4 +1,8 @@
 game/*.js.map
 game/*.js
-client/js/client_game.js
+client/js/*.js
+client/js/*.js.map
 server.js
+server.js.map
+node_modules/*
+.vscode/*

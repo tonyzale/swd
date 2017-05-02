@@ -5,12 +5,10 @@
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "outDir": "../client/js"
     },
     "files": [
-        "game/cards.ts",
-        "game/game.ts",
-        "game/events.ts",
-        "server.ts"
+        "client_game.ts"
     ]
 }
