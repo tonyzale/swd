@@ -1,5 +1,6 @@
 /// <reference path="../node_modules/@types/angular/index.d.ts" />
 /// <reference path="../node_modules/@types/socket.io-client/index.d.ts" />
+/// <reference path="json_payload.ts" />
 
 (function(angular: angular.IAngularStatic) {
     var gameApp = angular.module('GameApp', []);
@@ -12,8 +13,8 @@
         card_height: number;
         moves: any[];
         show_modal: boolean;
-        modal_data: any;
-        showModal: (d:any)=>void;
+        modal_data: Modal;
+        showModal: (d:Modal)=>void;
         selectMove: (d:any)=>void;
         movesForCard: (d:any)=>any[];
         socketService: any;
@@ -37,9 +38,9 @@
             id: 'modalid',
             title: 'modal title',
             text: 'Make a choice:',
-            options: [{text:'Action A', id:'o1'}, {text:'Action B', id:'o2'}]
+            options: []
         };
-        modalService.showModal = function(data: any) {
+        modalService.showModal = function(data: Modal) {
             $scope.show_modal = true;
             $scope.modal_data = data;
         }
@@ -62,12 +63,12 @@
             $scope.$apply();
         });
 
-        socketService.socket.on('state', function(state: any) {
+        socketService.socket.on('state', function(state: string) {
             $scope.game_state = JSON.parse(state);
             $scope.$apply();
         });
 
-        socketService.socket.on('moves', function(moves: any) {
+        socketService.socket.on('moves', function(moves: string) {
             $scope.moves = JSON.parse(moves);
             $scope.clearMovesFromCards();
             $scope.game_state.player.forEach(function(p: any) {
@@ -87,7 +88,7 @@
             $scope.$apply();
         });
         
-        socketService.socket.on('modal', function(data: any){
+        socketService.socket.on('modal', function(data: string){
             $scope.modal_data = JSON.parse(data);
             $scope.$apply();
         });
@@ -154,7 +155,7 @@
                     }
                 }
                 scope.clickCard = function() {
-                    var modal_data = {
+                    var modal_data: Modal = {
                         id: 'modalid',
                         title: scope.card.name,
                         text: 'Options:',

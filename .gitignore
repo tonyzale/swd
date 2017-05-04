@@ -6,3 +6,5 @@ server.js
 server.js.map
 node_modules/*
 .vscode/*
+client_ts/*.js
+.alm/*

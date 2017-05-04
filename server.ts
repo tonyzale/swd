@@ -36,6 +36,10 @@ interface GameSocket extends SocketIO.Socket {
   name: string;
 }
 
+function sendModal(socket: GameSocket, m: Modal) {
+    socket.emit('modal', JSON.stringify(m));
+}
+
 game_io.on('connection', function(socket: GameSocket) {
   messages.forEach(function(data) {
     socket.emit('message', data);
@@ -68,11 +72,11 @@ game_io.on('connection', function(socket: GameSocket) {
 
   socket.on('choice', function(choice) {
     console.log('Got choice: ' + choice);
-    socket.emit('modal', JSON.stringify({
+    sendModal(socket, {
       id: 'gotchoice',
       title: 'Received',
       text: 'Got your choice of ' + choice
-    }));
+    });
   });
 
   socket.on('move-selection', function(move) {
