@@ -5,7 +5,7 @@
 (function(angular: angular.IAngularStatic) {
     var gameApp = angular.module('GameApp', []);
     interface GameScope extends angular.IScope {
-        messages: any[];
+        messages: Chat[];
         roster: any[];
         name: string;
         text: string;
@@ -53,7 +53,7 @@
             $scope.setName();
         });
 
-        socketService.socket.on('message', function(msg: string) {
+        socketService.socket.on('message', function(msg: Chat) {
             $scope.messages.push(msg);
             $scope.$apply();
         });

@@ -10,3 +10,8 @@ interface Modal {
   text: string;
   options?: ModalOption[];
 }
+
+interface Chat {
+  text: string,
+  name: string
+}

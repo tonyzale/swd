@@ -29,8 +29,8 @@ let server = http.createServer(router);
 let game_io = socketio.listen(server);
 
 router.use(express.static(path.resolve(__dirname, 'client')));
-let messages = [];
-let sockets = [];
+let messages: Chat[] = [];
+let sockets: GameSocket[] = [];
 
 interface GameSocket extends SocketIO.Socket {
   name: string;
@@ -40,9 +40,13 @@ function sendModal(socket: GameSocket, m: Modal) {
     socket.emit('modal', JSON.stringify(m));
 }
 
+function sendChat(socket: GameSocket, chat: Chat) {
+  socket.emit('message', chat);
+}
+
 game_io.on('connection', function(socket: GameSocket) {
   messages.forEach(function(data) {
-    socket.emit('message', data);
+    sendChat(socket, data);
   });
 
   socket.emit('state', JSON.stringify(game));
@@ -58,7 +62,7 @@ game_io.on('connection', function(socket: GameSocket) {
     updateRoster();
   });
 
-  socket.on('message', function(msg) {
+  socket.on('message', function(msg: string) {
     if (!msg)
       return;
     let data = { name: socket.name, text: msg };
