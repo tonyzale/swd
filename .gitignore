@@ -2,6 +2,8 @@ game/*.js.map
 game/*.js
 client/js/*.js
 client/js/*.js.map
+client/js/client_ts/*
+client/js/game/*
 server.js
 server.js.map
 node_modules/*

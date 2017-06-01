@@ -2,10 +2,12 @@
 /// <reference path="../node_modules/@types/socket.io-client/index.d.ts" />
 /// <reference path="json_payload.ts" />
 
+import json_payload = require('./json_payload');
+
 (function(angular: angular.IAngularStatic) {
     var gameApp = angular.module('GameApp', []);
     interface GameScope extends angular.IScope {
-        messages: Chat[];
+        messages: json_payload.Chat[];
         roster: any[];
         name: string;
         text: string;
@@ -13,14 +15,14 @@
         card_height: number;
         moves: any[];
         show_modal: boolean;
-        modal_data: Modal;
-        showModal: (d:Modal)=>void;
+        modal_data: json_payload.Modal;
+        showModal: (d:json_payload.Modal)=>void;
         selectMove: (d:any)=>void;
         movesForCard: (d:any)=>any[];
         socketService: any;
         setName: ()=>void;
         clearMovesFromCards: ()=>void;
-        game_state: any;
+        game_state: json_payload.ClientGameState;
         send: ()=>void;
     };
     gameApp.controller('ChatController', ['$scope', 'modalService', 'socketService', function($scope: GameScope, modalService, socketService) {
@@ -40,7 +42,7 @@
             text: 'Make a choice:',
             options: []
         };
-        modalService.showModal = function(data: Modal) {
+        modalService.showModal = function(data: json_payload.Modal) {
             $scope.show_modal = true;
             $scope.modal_data = data;
         }
@@ -53,7 +55,7 @@
             $scope.setName();
         });
 
-        socketService.socket.on('message', function(msg: Chat) {
+        socketService.socket.on('message', function(msg: json_payload.Chat) {
             $scope.messages.push(msg);
             $scope.$apply();
         });
@@ -71,19 +73,17 @@
         socketService.socket.on('moves', function(moves: string) {
             $scope.moves = JSON.parse(moves);
             $scope.clearMovesFromCards();
-            $scope.game_state.player.forEach(function(p: any) {
-                p.hand.forEach(function(c: any) {
+            $scope.game_state.player.hand.forEach(function(c: any) {
                     c.moves = $scope.movesForCard(c);
-                });
-                p.characters.forEach(function(char: any) {
-                    char.card.moves = $scope.movesForCard(char.card);
-                    char.upgrades.forEach(function(u: any) {
-                        u.card.moves = $scope.movesForCard(u.card);
-                    });
-                });
-                p.supports.forEach(function(support: any) {
-                    support.card.moves = $scope.movesForCard(support.card);
-                });
+            });
+            $scope.game_state.player.characters.forEach(function(char: any) {
+              char.card.moves = $scope.movesForCard(char.card);
+              char.upgrades.forEach(function(u: any) {
+                u.card.moves = $scope.movesForCard(u.card);
+              });
+            });
+            $scope.game_state.player.supports.forEach(function(support: any) {
+              support.card.moves = $scope.movesForCard(support.card);
             });
             $scope.$apply();
         });
@@ -104,11 +104,9 @@
         };
 
         $scope.clearMovesFromCards = function() {
-            $scope.game_state.player.forEach(function(p: any) {
-                p.hand.forEach(function(c: any) {
-                    c.moves = [];
-                });
-            });
+          $scope.game_state.player.hand.forEach(function(c: any) {
+            c.moves = [];
+          });
         };
 
         $scope.movesForCard = function(card) {
@@ -155,7 +153,7 @@
                     }
                 }
                 scope.clickCard = function() {
-                    var modal_data: Modal = {
+                    var modal_data: json_payload.Modal = {
                         id: 'modalid',
                         title: scope.card.name,
                         text: 'Options:',

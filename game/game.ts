@@ -2,6 +2,7 @@
 /// <reference path="./events.ts" />
 import cards = require('./cards');
 import events = require('./events');
+import json_payload = require('../client_ts/json_payload');
 
 export class CardDB {
     constructor() {
@@ -25,6 +26,32 @@ export class GameState {
     constructor(public p1: Player, public p2: Player) {
         this.player.push(p1);
         this.player.push(p2);
+    }
+
+    GetGameStateForPlayer(player_id: number): json_payload.ClientGameState {
+      let player = this.player.filter(p => { return p.id == player_id; })[0];
+      let opp = this.player.filter(p => { return p.id != player_id; })[0];
+      return {
+        player: {
+          hand: player.hand,
+          draw_deck_size: player.draw_deck.length,
+          discard_pile: player.discard_pile,
+          out_pile: player.out_pile,
+          characters: player.characters,
+          supports: player.supports,
+          resources: player.resources
+        },
+        opp: {
+          hand_size: opp.hand.length,
+          draw_deck_size: opp.draw_deck.length,
+          discard_pile: opp.discard_pile,
+          out_pile: opp.out_pile,
+          characters: opp.characters,
+          supports: opp.supports,
+          resources: opp.resources          
+        },
+        player_active: true
+      };
     }
     
     GetAvailableActions(player_id: number): TurnAction[] {
@@ -179,7 +206,7 @@ class PlayDie {
     public active_face: number = 1;
 }
 
-class Upgrade {
+export class Upgrade {
     constructor(public readonly card: cards.Card) {
         if (card.type != cards.CardType.Upgrade) {
             throw new RangeError('Card Not Upgrade');
@@ -226,7 +253,7 @@ export class Character {
     public dice: PlayDie[] = [];
 }
 
-class Support {
+export class Support {
     constructor(public readonly card: cards.Card) {
         if (this.card.type != cards.CardType.Support) {
             throw new RangeError('Not Support Card');

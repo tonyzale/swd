@@ -131,6 +131,10 @@ export class Card {
     public readonly full_name: string;
 }
 
+export class UnknownCard {
+
+}
+
 export class Die {
     constructor(public readonly json: any) {
         this.sides = [];
