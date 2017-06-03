@@ -12,7 +12,6 @@ import express = require('express');
 
 import destiny = require('./game/game');
 import fs = require('fs');
-import json_payload = require('./client_ts/json_payload');
 let card_db = new destiny.CardDB();
 let deck_text = fs.readFileSync('game/deck.txt').toString();
 let p1 = new destiny.Player('p1', 0, deck_text, card_db);
@@ -30,18 +29,18 @@ let server = http.createServer(router);
 let game_io = socketio.listen(server);
 
 router.use(express.static(path.resolve(__dirname, 'client')));
-let messages: json_payload.Chat[] = [];
+let messages: Chat[] = [];
 let sockets: GameSocket[] = [];
 
 interface GameSocket extends SocketIO.Socket {
   name: string;
 }
 
-function sendModal(socket: GameSocket, m: json_payload.Modal) {
+function sendModal(socket: GameSocket, m: Modal) {
     socket.emit('modal', JSON.stringify(m));
 }
 
-function sendChat(socket: GameSocket, chat: json_payload.Chat) {
+function sendChat(socket: GameSocket, chat: Chat) {
   socket.emit('message', chat);
 }
 

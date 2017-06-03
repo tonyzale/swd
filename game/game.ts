@@ -1,8 +1,8 @@
 /// <reference path="./cards.ts" />
 /// <reference path="./events.ts" />
+/// <reference path="../client_ts/json_payload.ts" />
 import cards = require('./cards');
 import events = require('./events');
-import json_payload = require('../client_ts/json_payload');
 
 export class CardDB {
     constructor() {
@@ -28,7 +28,7 @@ export class GameState {
         this.player.push(p2);
     }
 
-    GetGameStateForPlayer(player_id: number): json_payload.ClientGameState {
+    GetGameStateForPlayer(player_id: number): ClientGameState {
       let player = this.player.filter(p => { return p.id == player_id; })[0];
       let opp = this.player.filter(p => { return p.id != player_id; })[0];
       return {
@@ -48,7 +48,7 @@ export class GameState {
           out_pile: opp.out_pile,
           characters: opp.characters,
           supports: opp.supports,
-          resources: opp.resources          
+          resources: opp.resources
         },
         player_active: true
       };

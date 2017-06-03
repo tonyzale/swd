@@ -2,12 +2,10 @@
 /// <reference path="../node_modules/@types/socket.io-client/index.d.ts" />
 /// <reference path="json_payload.ts" />
 
-import json_payload = require('./json_payload');
-
 (function(angular: angular.IAngularStatic) {
     var gameApp = angular.module('GameApp', []);
     interface GameScope extends angular.IScope {
-        messages: json_payload.Chat[];
+        messages: Chat[];
         roster: any[];
         name: string;
         text: string;
@@ -15,14 +13,14 @@ import json_payload = require('./json_payload');
         card_height: number;
         moves: any[];
         show_modal: boolean;
-        modal_data: json_payload.Modal;
-        showModal: (d:json_payload.Modal)=>void;
+        modal_data: Modal;
+        showModal: (d:Modal)=>void;
         selectMove: (d:any)=>void;
         movesForCard: (d:any)=>any[];
         socketService: any;
         setName: ()=>void;
         clearMovesFromCards: ()=>void;
-        game_state: json_payload.ClientGameState;
+        game_state: ClientGameState;
         send: ()=>void;
     };
     gameApp.controller('ChatController', ['$scope', 'modalService', 'socketService', function($scope: GameScope, modalService, socketService) {
@@ -42,7 +40,7 @@ import json_payload = require('./json_payload');
             text: 'Make a choice:',
             options: []
         };
-        modalService.showModal = function(data: json_payload.Modal) {
+        modalService.showModal = function(data: Modal) {
             $scope.show_modal = true;
             $scope.modal_data = data;
         }
@@ -55,7 +53,7 @@ import json_payload = require('./json_payload');
             $scope.setName();
         });
 
-        socketService.socket.on('message', function(msg: json_payload.Chat) {
+        socketService.socket.on('message', function(msg: Chat) {
             $scope.messages.push(msg);
             $scope.$apply();
         });
@@ -133,27 +131,34 @@ import json_payload = require('./json_payload');
                 top: '=',
                 overlay: '=',
                 card_width: '=width',
-                card_height: '=height'
+                card_height: '=height',
+                back: '='
             },
             templateUrl: 'card.html',
             link: function(scope: CardScope) {
                 scope.border_width = 3;
+                scope.imgPath = function() {
+                  if (scope.back && scope.back === "yes") {
+                    return "http://www.cardgamedb.com/deckbuilders/starwarsdestiny/swd-cardback.png";
+                  }
+                  return scope.card.json.imagesrc;
+                }
                 scope.wrapWidth = function() {
-                    if (scope.card.state == 1) {
+                    if (scope.card && scope.card.state == 1) {
                         return scope.card_height;
                     } else {
                         return scope.card_width;
                     }
                 }
                 scope.borderCss = function() {
-                    if (scope.card.moves && scope.card.moves.length > 0) {
+                    if (scope.card && scope.card.moves && scope.card.moves.length > 0) {
                         return '3px solid lime';
                     } else {
                         return '3px solid rgba(0,0,0,0)';
                     }
                 }
                 scope.clickCard = function() {
-                    var modal_data: json_payload.Modal = {
+                    var modal_data: Modal = {
                         id: 'modalid',
                         title: scope.card.name,
                         text: 'Options:',

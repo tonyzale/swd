@@ -23,10 +23,8 @@
         </div>
       </div>
       <div class="page-header">
-        <div>
-          <h2>{{game_state.player.name}}</h2>
-          <h3>Resources: {{game_state.player.resources}}</h3>
-          <h3>Hand</h3>
+        <div class="opponent">
+          <h3>Resources: {{game_state.opp.resources}}</h3>
           <div class="draw_deck_wrap">
             <div style="position:relative">
               <img class="card" src="http://www.cardgamedb.com/deckbuilders/starwarsdestiny/swd-cardback.png"
@@ -37,10 +35,14 @@
               <div class="card_overlay"
                ng-style="{
                     'top': (card_height * 0.857) + 'px'
-               }">{{game_state.player.draw_deck_size + ' cards'}}</div>
+               }">{{game_state.opp.draw_deck_size + ' cards'}}</div>
             </div>
           </div>
-          <card ng-repeat="card in game_state.player.hand" info="card" width="card_width" height="card_height"></card>
+          <card ng-repeat="card_num in [1,2,3,4,5,6,7,8,9,10] | limitTo:game_state.opp.hand_size"
+               width="card_width" height="card_height" back="'yes'"></card>
+       </div>
+        <div>
+          <h2>{{game_state.player.name}}</h2>
           <h3>Characters</h3>
           <div class="all_character_wrap" ng-style="{'height':(2.6*card_height) + 'px'}">
             <div style="border:1px solid black" class="character_wrap" ng-repeat="char in game_state.player.characters" ng-style="{'left': $index*(1.333*card_width) + 'px'}"}>
@@ -59,6 +61,22 @@
               </div>
             </div>
           </div>
+          <h3>Hand</h3>
+          <div class="draw_deck_wrap">
+            <div style="position:relative">
+              <img class="card" src="http://www.cardgamedb.com/deckbuilders/starwarsdestiny/swd-cardback.png"
+                   ng-style="{
+                     'width': card_width + 'px',
+                     'height': card_height + 'px'
+                   }"/>
+              <div class="card_overlay"
+               ng-style="{
+                    'top': (card_height * 0.857) + 'px'
+               }">{{game_state.player.draw_deck_size + ' cards'}}</div>
+            </div>
+          </div>
+          <card ng-repeat="card in game_state.player.hand" info="card" width="card_width" height="card_height"></card>
+                    <h3>Resources: {{game_state.player.resources}}</h3>
       </div>
       <div class="page-header">
         <h1>Chat Example</h1>
