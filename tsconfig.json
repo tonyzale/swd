@@ -2,10 +2,10 @@
     "compileOnSave": true,
     "compilerOptions": {
         "module": "commonjs",
-        "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "strict": true
     },
     "files": [
         "game/cards.ts",

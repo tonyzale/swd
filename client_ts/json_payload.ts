@@ -16,6 +16,11 @@ declare global {
     options?: ModalOption[];
   }
 
+  export interface ModalSelection {
+    content_id: string;
+    choice: SerializedTurnAction;
+  }
+
   export interface Chat {
     text: string,
     name: string
@@ -25,6 +30,25 @@ declare global {
     player: UserPlayer;
     opp: OppPlayer;
     player_active: boolean;
+  }
+
+  type ActionName =
+    "PlayEventOnCard" |
+    "PlayEventOnPlayer" |
+    "InstallUpgrade" |
+    "InstallSupport" |
+    "Activate" |
+    "Resolve" |
+    "Discard" |
+    "UseCardAction" |
+    "ClaimBattlefield" |
+    "Pass" |
+    "RoundReset";
+
+  interface SerializedTurnAction {
+    action: ActionName;
+    card_id?: number;
+    target?: number;
   }
 
   export interface UserPlayer {

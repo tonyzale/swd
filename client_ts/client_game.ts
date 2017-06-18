@@ -126,7 +126,8 @@
         return {
             restrict: 'E',
             scope: {
-                card: '=info',
+              card: '=info',
+                state: '=',
                 left: '=',
                 top: '=',
                 overlay: '=',
@@ -176,7 +177,12 @@
             }
         };
     }]);
-    gameApp.directive('modal', function(){
+    gameApp.directive('modal', function() {
+      interface ModalContent {
+        title: string;
+        text: string;
+        options: any[];
+      }
         interface ModalScope extends ng.IScope {
             clickedOption: (option: number)=>void;
             content: any;
@@ -191,18 +197,20 @@
             },
             templateUrl: 'modal.html',
             link: function(scope: ModalScope) {
-                scope.clickedOption = function(option: number) {
-                    scope.socket.emit('choice', JSON.stringify({
-                        content_id: scope.content.id,
-                        choice: scope.content.options[option].text
-                    }));
-                }
+              scope.clickedOption = function(option: number) {
+                let selection: ModalSelection = {
+                  content_id: scope.content.id,
+                  choice: scope.content.options[option].text
+                };
+                scope.show = false;
+                scope.socket.emit('choice', JSON.stringify(selection));
+              };
             }
         };
     });
     gameApp.factory('modalService', function() {
         return {
-            showModal: function(data){throw new Error('using showModal before init');}
+            showModal: function(data: any){throw new Error('using showModal before init');}
         };
     });
     gameApp.factory('socketService', function() {

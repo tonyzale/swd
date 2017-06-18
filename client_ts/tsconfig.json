@@ -2,11 +2,11 @@
     "compileOnSave": true,
     "compilerOptions": {
         "module": "None",
-        "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "outDir": "../client/js"
+        "outDir": "../client/js",
+        "strict": true
     },
     "files": [
         "client_game.ts"

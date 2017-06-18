@@ -102,6 +102,18 @@ export class GameState {
         out.push(new ClaimBattlefield());
         return out;
     }
+
+    UpdateState(player_id: number, action: SerializedTurnAction) {
+      let op: Operation;
+      if (action.action == "Activate") {
+        op = new ActivateCard(action.card_id);
+      }
+      if (!op) {
+        console.log('No op');
+        return;
+      }
+      op.MutateState(this);
+    }
     
     DebugString(): string {
         return `round ${this.round} [${this.player[0].DebugString()}] [${this.player[1].DebugString()}]`;
@@ -203,7 +215,7 @@ class PlayDie {
         }
     }
     public state = DieState.Ready;
-    public active_face: number = 1;
+    public active_face: number = 0;
 }
 
 export class Upgrade {
@@ -281,7 +293,7 @@ class TurnRecord {
 }
 
 export class TurnAction {
-    constructor(public serialized: any){}
+    constructor(public serialized: SerializedTurnAction){}
 }
 
 export class PlayEventOnCard extends TurnAction {
@@ -301,7 +313,7 @@ export class InstallSupport extends TurnAction {
 }
 
 export class Activate extends TurnAction {
-    constructor(public target: Character | Upgrade | Support){
+    constructor(public target: Character | Support){
         super({action: 'Activate', card_id: target.card.id});
         this.card = target.card;
     }
@@ -472,4 +484,39 @@ export class DrawCard implements Operation {
         let p = state.player[this.player_id];
         p.hand.push(p.draw_deck.pop());
     }
+}
+
+function getRandomIntInclusive(min: number, max: number): number {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+export class ActivateCard implements Operation {
+  constructor(public readonly card_id: cards.CardId) { }
+  str(): string { return 'Activate ${card_id}'; }
+  MutateState(state: GameState) {
+    for (let player of state.player) {
+      for (let char of player.characters) {
+        if (char.card.id === this.card_id) {
+          console.log('found char to activate');
+          char.state = CardState.Exhausted;
+          for (let die of char.dice) {
+            if (die.state === DieState.Ready) {
+              die.state = DieState.InPlay;
+              die.active_face = Math.floor(Math.random()) % 6;
+            }
+          }
+          for (let upgrade of char.upgrades) {
+            for (let die of upgrade.dice) {
+              die.state = DieState.InPlay;
+              die.active_face = Math.floor(Math.random()) % 6;
+            }
+          }
+          return;
+        }
+      }
+    }
+  }
 }

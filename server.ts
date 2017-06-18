@@ -70,20 +70,25 @@ game_io.on('connection', function(socket: GameSocket) {
     messages.push(data);
   });
 
-  socket.on('identify', function(name) {
+  socket.on('identify', function(name: string) {
     socket.name = name || 'Anonymous';
   });
 
-  socket.on('choice', function(choice) {
+  socket.on('choice', function(choice: string) {
+    let selection: ModalSelection = JSON.parse(choice);
     console.log('Got choice: ' + choice);
+    game.UpdateState(0, selection.choice);
+/*
     sendModal(socket, {
       id: 'gotchoice',
       title: 'Received',
       text: 'Got your choice of ' + choice
-    });
+    });*/
+    socket.emit('state', JSON.stringify(game.GetGameStateForPlayer(0)));
+
   });
 
-  socket.on('move-selection', function(move) {
+  socket.on('move-selection', function(move: any) {
     let data = {
       name: socket.name,
       text: 'Played: ' + move.name
@@ -104,7 +109,7 @@ game_io.on('connection', function(socket: GameSocket) {
     );
   }
 
-  function broadcast(event, data) {
+  function broadcast(event: string, data: any) {
     sockets.forEach(function(socket) {
       socket.emit(event, data);
     });
