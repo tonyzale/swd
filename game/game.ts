@@ -55,11 +55,12 @@ export class GameState {
     }
     
     GetAvailableActions(player_id: number): TurnAction[] {
-        let active_player = this.player.filter(p => {return p.id == player_id;})[0];
+      let active_player = this.player.filter(p => { return p.id == player_id; })[0];
+      if (!active_player) return [];
         let opponent = this.player.filter(p => {return p.id != player_id;})[0];
         let out: TurnAction[] = [];
         for (let c of active_player.hand) {
-            if (c.cost > active_player.resources) continue;
+            if (c.cost && c.cost > active_player.resources) continue;
             if (c.type == cards.CardType.Event) {
                 out = out.concat(events.GetEventActions(c, active_player, opponent));
             } else if (c.type == cards.CardType.Upgrade) {
@@ -104,9 +105,9 @@ export class GameState {
     }
 
     UpdateState(player_id: number, action: SerializedTurnAction) {
-      let op: Operation;
+      let op: Operation | undefined = undefined;
       if (action.action == "Activate") {
-        op = new ActivateCard(action.card_id);
+        op = new ActivateCard(<number>action.card_id);
       }
       if (!op) {
         console.log('No op');
@@ -163,7 +164,8 @@ export class Player {
         }
         shuffle(this.draw_deck);
         for (let i = 0; i < 5; ++i) {
-            this.hand.push(this.draw_deck.pop());
+          let card = this.draw_deck.pop();
+          if (card) this.hand.push(card);
         }
     }
     
@@ -191,21 +193,20 @@ export class Player {
     battlefield: cards.Card;
 }
 
-enum DieState {
+export enum DieState {
     Ready,
     InPlay,
     Resolved,
     Unavailable
 }
 
-enum CardState {
+export enum CardState {
     Ready,
     Exhausted
 }
 
-class PlayDie {
+export class PlayDie {
     constructor(public die: cards.Die) {
-        
     }
     DebugString(): string {
         if (this.state == DieState.InPlay) {
@@ -243,6 +244,9 @@ export class Character {
         if (card.type != cards.CardType.Character) {
             throw new RangeError('Not Character Card');
         }
+        if (!card.die) {
+          throw new RangeError('No die for character');
+        }
         this.dice.push(new PlayDie(card.die));
         if (elite) {
             this.dice.push(new PlayDie(card.die));
@@ -270,8 +274,9 @@ export class Support {
         if (this.card.type != cards.CardType.Support) {
             throw new RangeError('Not Support Card');
         }
+        if (!this.card.die) throw new RangeError('Card missing die');
         if (this.card.die) {
-            this.dice.push(new PlayDie(card.die));
+            this.dice.push(new PlayDie(this.card.die));
         }
     }
     
@@ -418,7 +423,7 @@ export class BottomDrawPile implements Destination {
     }
 }
 
-function FindAndRemoveCard(target_card: cards.CardId, card_array: cards.Card[]): cards.Card {
+function FindAndRemoveCard(target_card: cards.CardId, card_array: cards.Card[]): cards.Card | undefined {
     for (let i = 0; i < card_array.length; ++i) {
         if (card_array[i].id == target_card) {
             return card_array.splice(i, 1)[0];
@@ -431,7 +436,7 @@ export class MoveCard implements Operation {
     constructor(public readonly card_id: cards.CardId, public readonly destination: Destination){}
     str(): string { return `MoveCard ${this.card_id} to ${this.destination.str()}`; }
     MutateState(state: GameState) {
-        let card: cards.Card;
+        let card: cards.Card | undefined;
         for (let player of state.player) {
             card = FindAndRemoveCard(this.card_id, player.hand);
             if (card) break;
@@ -481,8 +486,10 @@ export class DrawCard implements Operation {
     constructor(public readonly player_id: number){}
     str(): string { return `DrawCard ${this.player_id}`; }
     MutateState(state: GameState) {
-        let p = state.player[this.player_id];
-        p.hand.push(p.draw_deck.pop());
+      let p = state.player[this.player_id];
+      let card = p.draw_deck.pop();
+      if (!card) throw new Error('Trying to draw from empty deck');
+      p.hand.push(card);
     }
 }
 

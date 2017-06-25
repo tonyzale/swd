@@ -107,10 +107,15 @@
           });
         };
 
-        $scope.movesForCard = function(card) {
+        $scope.movesForCard = function(card): any[] {
             return $scope.moves.filter(function(m) {
                 return (m.card_id && (m.card_id == card.id));
             });
+        };
+
+        $scope.diceInPool = function(player: UserPlayer | OppPlayer): any[] {
+          let dice: any[] = [];
+          return dice;
         };
     }]);
     gameApp.directive('card', ['modalService', function(modalService) {
@@ -166,6 +171,9 @@
                         options: []
                     };
                     scope.card.moves.forEach(function(m: any, i: number) {
+                      if (modal_data.options === undefined) {
+                        modal_data.options = [];
+                       }
                        modal_data.options.push({
                            card_id: scope.card.id,
                            option_idx: i,

@@ -3,10 +3,9 @@
 import cards = require('./cards');
 import game = require('./game');
 
-let code_to_actions: { [code: string]: (card: cards.Card, player: game.Player, opp: game.Player) => game.TurnAction[]; };
+let code_to_actions: { [code: string]: (card: cards.Card, player: game.Player, opp: game.Player) => game.TurnAction[]; } = {};
 
-if (!code_to_actions) {
-    code_to_actions = {};
+if (code_to_actions == {}) {
     code_to_actions["01157"] = TakeCover;
 }
 

@@ -5,14 +5,15 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "strict": true
+        "strict": true,
+        "declaration": false
     },
     "files": [
         "game/cards.ts",
         "game/game.ts",
         "game/events.ts",
         "server.ts",
-        "client_ts/client_game.ts",
+        //"client_ts/client_game.ts",
         "client_ts/json_payload.ts"
     ]
 }

@@ -125,8 +125,8 @@ export class Card {
     public readonly affiliation: Affiliation;
     public readonly type: CardType;
     public readonly subtype: CardSubType;
-    public readonly die: Die;
-    public readonly cost: number;
+    public readonly die: Die|undefined;
+    public readonly cost: number|undefined;
     public readonly is_unique: boolean;
     public readonly full_name: string;
 }
@@ -193,7 +193,7 @@ export enum SideType {
     Blank
 }
     
-class DieSide {
+export class DieSide {
     constructor(public readonly type: SideType, public readonly val: number, public readonly is_modifier: boolean, public readonly resource_cost: number){}
     DebugString(): string {
         return `[${(this.is_modifier ? '+':'')}${SideType[this.type]}${(this.val > 0) ? this.val : '' }${((this.resource_cost > 0) ? (' cost:' + this.resource_cost) : '')}]`;

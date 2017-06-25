@@ -1,2 +1,4 @@
-node_modules/typescript/bin/tsc --outDir client/js client_ts/client_game.ts
-node_modules/typescript/bin/tsc server.ts
+echo "build client"
+node_modules/typescript/bin/tsc -p client_ts #--outDir client/js client_ts/client_game.ts
+echo "build server"
+node_modules/typescript/bin/tsc -p .
