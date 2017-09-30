@@ -43,6 +43,10 @@
        </div>
         <div>
           <h2>{{game_state.player.name}}</h2>
+          <h3>Dice Pool</h3>
+          <ul>
+            <li ng-repeat="char in game_state.player.characters">
+          </ul>
           <h3>Characters</h3>
           <div class="all_character_wrap" ng-style="{'height':(2.6*card_height) + 'px'}">
             <div style="border:1px solid black" class="character_wrap" ng-repeat="char in game_state.player.characters" ng-style="{'left': $index*(1.333*card_width) + 'px'}"}>

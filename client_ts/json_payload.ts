@@ -12,7 +12,7 @@ declare global {
   export interface Modal {
     id: string;
     title: string;
-    text: string;
+    text: string|SerializedTurnAction;
     options?: ModalOption[];
   }
 

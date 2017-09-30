@@ -2,26 +2,44 @@
 /// <reference path="../node_modules/@types/socket.io-client/index.d.ts" />
 /// <reference path="json_payload.ts" />
 
+import cards = require('../game/cards');
+import game = require('../game/game');
+
+class ClientCard extends cards.Card {
+    public moves: SerializedTurnAction[];
+};
+class ClientChar extends game.Character {
+    public moves: SerializedTurnAction[];
+    public card: ClientCard;
+};
+class ClientUpgrade extends game.Upgrade {
+    public moves: SerializedTurnAction[];
+    public card: ClientCard;
+}
+class ClientSupport extends game.Support {
+    public moves: SerializedTurnAction[];
+    public card: ClientCard;
+}
+
 (function(angular: angular.IAngularStatic) {
     var gameApp = angular.module('GameApp', []);
     interface GameScope extends angular.IScope {
         messages: Chat[];
-        roster: any[];
+        roster: string[];
         name: string;
         text: string;
         card_width: number;
         card_height: number;
-        moves: any[];
+        moves: SerializedTurnAction[];
         show_modal: boolean;
         modal_data: Modal;
-        showModal: (d:Modal)=>void;
-        selectMove: (d:any)=>void;
-        movesForCard: (d:any)=>any[];
-        socketService: any;
-        setName: ()=>void;
-        clearMovesFromCards: ()=>void;
+        showModal: (d: Modal) => void;
+        movesForCard: (c: ClientCard) => SerializedTurnAction[];
+        socketService: SocketIO.Client;
+        setName: () => void;
+        clearMovesFromCards: () => void;
         game_state: ClientGameState;
-        send: ()=>void;
+        send: () => void;
     };
     gameApp.controller('ChatController', ['$scope', 'modalService', 'socketService', function($scope: GameScope, modalService, socketService) {
         $scope.messages = [];
@@ -45,10 +63,6 @@
             $scope.modal_data = data;
         }
 
-        $scope.selectMove = function(move) {
-            socketService.socket.emit('move-selection', move);
-        };
-
         socketService.socket.on('connect', function() {
             $scope.setName();
         });
@@ -71,22 +85,22 @@
         socketService.socket.on('moves', function(moves: string) {
             $scope.moves = JSON.parse(moves);
             $scope.clearMovesFromCards();
-            $scope.game_state.player.hand.forEach(function(c: any) {
-                    c.moves = $scope.movesForCard(c);
+            $scope.game_state.player.hand.forEach(function(c: ClientCard) {
+                c.moves = $scope.movesForCard(c);
             });
-            $scope.game_state.player.characters.forEach(function(char: any) {
-              char.card.moves = $scope.movesForCard(char.card);
-              char.upgrades.forEach(function(u: any) {
-                u.card.moves = $scope.movesForCard(u.card);
-              });
+            $scope.game_state.player.characters.forEach(function(char: ClientChar) {
+                char.card.moves = $scope.movesForCard(<ClientCard>char.card);
+                char.upgrades.forEach(function(u: ClientUpgrade) {
+                    u.card.moves = $scope.movesForCard(<ClientCard>u.card);
+                });
             });
-            $scope.game_state.player.supports.forEach(function(support: any) {
-              support.card.moves = $scope.movesForCard(support.card);
+            $scope.game_state.player.supports.forEach(function(support: ClientSupport) {
+                support.card.moves = $scope.movesForCard(support.card);
             });
             $scope.$apply();
         });
-        
-        socketService.socket.on('modal', function(data: string){
+
+        socketService.socket.on('modal', function(data: string) {
             $scope.modal_data = JSON.parse(data);
             $scope.$apply();
         });
@@ -102,36 +116,36 @@
         };
 
         $scope.clearMovesFromCards = function() {
-          $scope.game_state.player.hand.forEach(function(c: any) {
-            c.moves = [];
-          });
+            $scope.game_state.player.hand.forEach(function(c: ClientCard) {
+                c.moves = [];
+            });
         };
 
-        $scope.movesForCard = function(card): any[] {
+        $scope.movesForCard = function(card: ClientCard): SerializedTurnAction[] {
             return $scope.moves.filter(function(m) {
                 return (m.card_id && (m.card_id == card.id));
             });
         };
 
         $scope.diceInPool = function(player: UserPlayer | OppPlayer): any[] {
-          let dice: any[] = [];
-          return dice;
+            let dice: any[] = [];
+            return dice;
         };
     }]);
     gameApp.directive('card', ['modalService', function(modalService) {
-        interface CardScope extends ng.IScope{
+        interface CardScope extends ng.IScope {
             border_width: number;
             card_height: number;
-            card_width:number;
-            card: any;
-            wrapWidth: ()=>number;
-            borderCss: ()=>string;
-            clickCard: ()=>void;
+            card_width: number;
+            card: ClientCard;
+            wrapWidth: () => number;
+            borderCss: () => string;
+            clickCard: () => void;
         }
         return {
             restrict: 'E',
             scope: {
-              card: '=info',
+                card: '=info',
                 state: '=',
                 left: '=',
                 top: '=',
@@ -144,13 +158,13 @@
             link: function(scope: CardScope) {
                 scope.border_width = 3;
                 scope.imgPath = function() {
-                  if (scope.back && scope.back === "yes") {
-                    return "http://www.cardgamedb.com/deckbuilders/starwarsdestiny/swd-cardback.png";
-                  }
-                  return scope.card.json.imagesrc;
+                    if (scope.back && scope.back === "yes") {
+                        return "http://www.cardgamedb.com/deckbuilders/starwarsdestiny/swd-cardback.png";
+                    }
+                    return scope.card.json.imagesrc;
                 }
                 scope.wrapWidth = function() {
-                    if (scope.card && scope.card.state == 1) {
+                    if (scope.card && scope.state == 1) {
                         return scope.card_height;
                     } else {
                         return scope.card_width;
@@ -170,15 +184,15 @@
                         text: 'Options:',
                         options: []
                     };
-                    scope.card.moves.forEach(function(m: any, i: number) {
-                      if (modal_data.options === undefined) {
-                        modal_data.options = [];
-                       }
-                       modal_data.options.push({
-                           card_id: scope.card.id,
-                           option_idx: i,
-                           text: m
-                       })
+                    scope.card.moves.forEach(function(m: SerializedTurnAction, i: number) {
+                        if (modal_data.options === undefined) {
+                            modal_data.options = [];
+                        }
+                        modal_data.options.push({
+                            card_id: scope.card.id,
+                            option_idx: i,
+                            text: JSON.stringify(m)
+                        })
                     });
                     modalService.showModal(modal_data);
                 };
@@ -186,13 +200,13 @@
         };
     }]);
     gameApp.directive('modal', function() {
-      interface ModalContent {
-        title: string;
-        text: string;
-        options: any[];
-      }
+        interface ModalContent {
+            title: string;
+            text: string;
+            options: any[];
+        }
         interface ModalScope extends ng.IScope {
-            clickedOption: (option: number)=>void;
+            clickedOption: (option: number) => void;
             content: any;
             socket: SocketIOClient.Socket;
         }
@@ -205,20 +219,20 @@
             },
             templateUrl: 'modal.html',
             link: function(scope: ModalScope) {
-              scope.clickedOption = function(option: number) {
-                let selection: ModalSelection = {
-                  content_id: scope.content.id,
-                  choice: scope.content.options[option].text
+                scope.clickedOption = function(option: number) {
+                    let selection: ModalSelection = {
+                        content_id: scope.content.id,
+                        choice: scope.content.options[option].text
+                    };
+                    scope.show = false;
+                    scope.socket.emit('choice', JSON.stringify(selection));
                 };
-                scope.show = false;
-                scope.socket.emit('choice', JSON.stringify(selection));
-              };
             }
         };
     });
     gameApp.factory('modalService', function() {
         return {
-            showModal: function(data: any){throw new Error('using showModal before init');}
+            showModal: function(data: any) { throw new Error('using showModal before init'); }
         };
     });
     gameApp.factory('socketService', function() {
