@@ -1,9 +1,4 @@
-/// <reference path="./cards.ts" />
-/// <reference path="./events.ts" />
-/// <reference path="./json_payload.ts" />
-// import cards = require('./cards');
 import { Card, CardType, CardId, Die, SideType } from './cards';
-//import events = require('./events');
 import { GetEventActions } from './events';
 import { ClientGameState, SerializedTurnAction } from './json_payload';
 

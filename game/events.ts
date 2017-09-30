@@ -1,7 +1,3 @@
-/// <reference path="./cards.ts" />
-/// <reference path="./game.ts" />
-//import cards = require('./cards');
-//import game = require('./game');
 import { Card } from './cards';
 import { Player, PlayEventOnCard, TurnAction, Character } from './game';
 
