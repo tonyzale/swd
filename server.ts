@@ -9,6 +9,7 @@ import path = require('path');
 import async = require('async');
 import socketio = require('socket.io');
 import express = require('express');
+import json_payload = require('./game/json_payload');
 
 import destiny = require('./game/game');
 import fs = require('fs');
@@ -29,18 +30,18 @@ let server = http.createServer(router);
 let game_io = socketio.listen(server);
 
 router.use(express.static(path.resolve(__dirname, '../swd-client/dist')));
-let messages: Chat[] = [];
+let messages: json_payload.Chat[] = [];
 let sockets: GameSocket[] = [];
 
 interface GameSocket extends SocketIO.Socket {
     name: string;
 }
 
-function sendModal(socket: GameSocket, m: Modal) {
+function sendModal(socket: GameSocket, m: json_payload.Modal) {
     socket.emit('modal', JSON.stringify(m));
 }
 
-function sendChat(socket: GameSocket, chat: Chat) {
+function sendChat(socket: GameSocket, chat: json_payload.Chat) {
     socket.emit('message', chat);
 }
 
@@ -76,7 +77,7 @@ game_io.on('connection', function(socket: GameSocket) {
     });
 
     socket.on('choice', function(choice: string) {
-        let selection: ModalSelection = JSON.parse(choice);
+        let selection: json_payload.ModalSelection = JSON.parse(choice);
         console.log('Got choice: ' + choice);
         game.UpdateState(0, selection.choice);
         /*

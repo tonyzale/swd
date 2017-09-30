@@ -12,7 +12,7 @@
         "game/cards.ts",
         "game/game.ts",
         "game/events.ts",
-        "server.ts",
-        "client_ts/json_payload.ts"
+        "game/json_payload.ts",
+        "server.ts"
     ]
 }
