@@ -28,8 +28,7 @@ let router = express();
 let server = http.createServer(router);
 let game_io = socketio.listen(server);
 
-// router.use(express.static(path.resolve(__dirname, 'client')));
-router.use(express.static(path.resolve(__dirname, '../ng-test-app/dist')));
+router.use(express.static(path.resolve(__dirname, '../swd-client/dist')));
 let messages: Chat[] = [];
 let sockets: GameSocket[] = [];
 

@@ -1,9 +1,5 @@
-rm client/js/client_js/*.js
-rm client/js/client_js/*.js.map
 rm game/*.js
 rm game/*.js.map
 rm game/*.d.ts
 rm server.js*
 rm server.d.ts
-rm client_ts/*.d.ts
-rm client_ts/*.js*
