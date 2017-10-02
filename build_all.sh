@@ -1,4 +1,3 @@
-echo "build server"
-node_modules/typescript/bin/tsc -p .
+build_server.sh
 echo "build client"
 (cd ../swd-client; ng build)
