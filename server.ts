@@ -9,10 +9,12 @@ import path = require('path');
 import async = require('async');
 import socketio = require('socket.io');
 import express = require('express');
+import cerialize = require('cerialize');
 import json_payload = require('./game/json_payload');
 
 import destiny = require('./game/game');
 import fs = require('fs');
+
 let card_db = new destiny.CardDB(JSON.parse(fs.readFileSync('game/cards.json').toString()));
 let deck_text = fs.readFileSync('game/deck.txt').toString();
 let p1 = new destiny.Player('p1', 0, deck_text, card_db);
@@ -77,15 +79,8 @@ game_io.on('connection', function(socket: GameSocket) {
     });
 
     socket.on('choice', function(choice: string) {
-        let selection: json_payload.ModalSelection = JSON.parse(choice);
-        console.log('Got choice: ' + choice);
+        let selection: json_payload.ModalSelection = cerialize.Deserialize(JSON.parse(choice), json_payload.ModalSelection);
         game.UpdateState(0, selection.choice);
-        /*
-            sendModal(socket, {
-              id: 'gotchoice',
-              title: 'Received',
-              text: 'Got your choice of ' + choice
-            });*/
         socket.emit('state', JSON.stringify(game.GetGameStateForPlayer(0)));
 
     });

@@ -7,6 +7,7 @@
   "author": "Tony Zale <tonyzale@gmail.com>",
   "dependencies": {
     "async": "~2.4.0",
+    "cerialize": "*",
     "express": "~4.15.2",
     "socket.io": "*",
     "typescript": "*"

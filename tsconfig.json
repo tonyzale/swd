@@ -6,7 +6,8 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "strict": true,
-        "declaration": false
+        "declaration": false,
+	"experimentalDecorators": true
     },
     "files": [
         "game/cards.ts",

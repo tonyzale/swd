@@ -104,6 +104,9 @@ export class GameState {
         let op: Operation | undefined = undefined;
         if (action.action == "Activate") {
             op = new ActivateCard(<number>action.card_id);
+        } else if (action.action == "InstallUpgrade") {
+            op = new MoveCard(<number>action.card_id,
+                new NewUpgrade(player_id, <number>action.target));
         }
         if (!op) {
             console.log('No op');

@@ -1,23 +1,6 @@
 import { Card } from './cards';
 import { Character, Support } from './game';
-
-interface ModalOption {
-    text: string;
-    option_idx: number;
-    card_id: number;
-}
-
-export interface Modal {
-    id: string;
-    title: string;
-    text: string | SerializedTurnAction;
-    options?: ModalOption[];
-}
-
-export interface ModalSelection {
-    content_id: string;
-    choice: SerializedTurnAction;
-}
+import { autoserialize } from 'cerialize';
 
 export interface Chat {
     text: string,
@@ -43,10 +26,24 @@ type ActionName =
     "Pass" |
     "RoundReset";
 
-export interface SerializedTurnAction {
-    action: ActionName;
-    card_id?: number;
-    target?: number;
+export class SerializedTurnAction {
+    @autoserialize action: string;
+    @autoserialize card_id?: number;
+    @autoserialize target?: number;
+    constructor(action: ActionName, card_id?: number, target?: number) {
+        this.action = action;
+        this.card_id = card_id;
+        this.target = target;
+    }
+}
+
+export class ModalSelection {
+    @autoserialize public content_id: string;
+    @autoserialize public choice: SerializedTurnAction;
+    constructor(content_id: string, choice: SerializedTurnAction) {
+        this.content_id = content_id;
+        this.choice = choice;
+    }
 }
 
 export interface UserPlayer {
@@ -67,4 +64,18 @@ export interface OppPlayer {
     characters: Character[];
     supports: Support[];
     resources: number;
+}
+
+export interface ModalOption {
+    card_id: number;
+    option_idx: number;
+    sta: SerializedTurnAction;
+    text: string;
+};
+
+export interface Modal {
+    id: string;
+    title: string;
+    text: string | SerializedTurnAction;
+    options?: ModalOption[];
 }
